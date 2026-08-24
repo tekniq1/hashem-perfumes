@@ -14,7 +14,10 @@ export const Route = createFileRoute("/product/$id")({
   head: () => ({
     meta: [
       { title: "Product — HASHEM LELTEEB" },
-      { name: "description", content: "A rare luxury piece from the HASHEM LELTEEB private collection." },
+      {
+        name: "description",
+        content: "A rare luxury piece from the HASHEM LELTEEB private collection.",
+      },
       { property: "og:title", content: "Product — HASHEM LELTEEB" },
       {
         property: "og:description",

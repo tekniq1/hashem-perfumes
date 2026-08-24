@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 export type CartLine = {
   id: string;
@@ -62,9 +55,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           const found = prev.find((l) => l.id === line.id);
           if (found) {
             return prev.map((l) =>
-              l.id === line.id
-                ? { ...l, qty: Math.min(l.qty + qty, Math.max(line.stock, 1)) }
-                : l,
+              l.id === line.id ? { ...l, qty: Math.min(l.qty + qty, Math.max(line.stock, 1)) } : l,
             );
           }
           return [...prev, { ...line, qty }];

@@ -109,8 +109,10 @@ function AdminBranchesPage() {
       if (finalNameAr && !finalNameEn) finalNameEn = await translateText(finalNameAr, "en");
       else if (finalNameEn && !finalNameAr) finalNameAr = await translateText(finalNameEn, "ar");
 
-      if (finalAddressAr && !finalAddressEn) finalAddressEn = await translateText(finalAddressAr, "en");
-      else if (finalAddressEn && !finalAddressAr) finalAddressAr = await translateText(finalAddressEn, "ar");
+      if (finalAddressAr && !finalAddressEn)
+        finalAddressEn = await translateText(finalAddressAr, "en");
+      else if (finalAddressEn && !finalAddressAr)
+        finalAddressAr = await translateText(finalAddressEn, "ar");
 
       const payload = {
         name_ar: finalNameAr || finalNameEn,
@@ -141,7 +143,9 @@ function AdminBranchesPage() {
       setEditing(null);
     },
     onError: (err) => {
-      toast.error(err instanceof Error ? err.message : pick("حدث خطأ أثناء حفظ الفرع", "Error saving branch"));
+      toast.error(
+        err instanceof Error ? err.message : pick("حدث خطأ أثناء حفظ الفرع", "Error saving branch"),
+      );
     },
   });
 
@@ -153,7 +157,9 @@ function AdminBranchesPage() {
       toast.success(t("deleted"));
     },
     onError: (err) => {
-      toast.error(err instanceof Error ? err.message : pick("تعذر حذف الفرع", "Failed to delete branch"));
+      toast.error(
+        err instanceof Error ? err.message : pick("تعذر حذف الفرع", "Failed to delete branch"),
+      );
     },
   });
 
@@ -227,14 +233,20 @@ function AdminBranchesPage() {
                       <MapPin className="size-4" />
                     </span>
                     <div>
-                      <h4 className="font-bold text-sm text-foreground">{pick(b.name_ar, b.name_en)}</h4>
-                      <span className="text-[11px] text-muted-foreground">{pick(b.city_ar, b.city_en)}</span>
+                      <h4 className="font-bold text-sm text-foreground">
+                        {pick(b.name_ar, b.name_en)}
+                      </h4>
+                      <span className="text-[11px] text-muted-foreground">
+                        {pick(b.city_ar, b.city_en)}
+                      </span>
                     </div>
                   </div>
 
                   <span
                     className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                      b.is_active ? "bg-emerald-500/15 text-emerald-600" : "bg-muted text-muted-foreground"
+                      b.is_active
+                        ? "bg-emerald-500/15 text-emerald-600"
+                        : "bg-muted text-muted-foreground"
                     }`}
                   >
                     {b.is_active ? pick("نشط", "Active") : pick("معطل", "Inactive")}
@@ -270,7 +282,14 @@ function AdminBranchesPage() {
                   <button
                     type="button"
                     onClick={() => {
-                      if (confirm(pick("هل أنت متأكد من حذف هذا الفرع؟", "Are you sure you want to delete this branch?"))) {
+                      if (
+                        confirm(
+                          pick(
+                            "هل أنت متأكد من حذف هذا الفرع؟",
+                            "Are you sure you want to delete this branch?",
+                          ),
+                        )
+                      ) {
                         deleteMutation.mutate(b.id);
                       }
                     }}
@@ -327,7 +346,11 @@ function AdminBranchesPage() {
                   className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-500 bg-amber-500/10 border border-amber-500/30 px-2.5 py-1 rounded-lg hover:bg-amber-500/20 transition-all cursor-pointer disabled:opacity-50"
                   title="ترجمة تلقائية / Auto-Translate"
                 >
-                  {translating ? <Loader2 className="size-3 animate-spin" /> : <Sparkles className="size-3" />}
+                  {translating ? (
+                    <Loader2 className="size-3 animate-spin" />
+                  ) : (
+                    <Sparkles className="size-3" />
+                  )}
                   <span>{translating ? t("auto_translating") : t("auto_translate_btn")}</span>
                 </button>
                 <button
@@ -344,7 +367,8 @@ function AdminBranchesPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="font-medium text-muted-foreground block mb-1">
-                    {pick("اسم الفرع (عربي)", "Branch Name (Arabic)")} <span className="text-primary">*</span>
+                    {pick("اسم الفرع (عربي)", "Branch Name (Arabic)")}{" "}
+                    <span className="text-primary">*</span>
                   </label>
                   <input
                     className={field}
@@ -393,7 +417,8 @@ function AdminBranchesPage() {
 
               <div>
                 <label className="font-medium text-muted-foreground block mb-1">
-                  {pick("العنوان التفصيلي (عربي)", "Detailed Address (Arabic)")} <span className="text-primary">*</span>
+                  {pick("العنوان التفصيلي (عربي)", "Detailed Address (Arabic)")}{" "}
+                  <span className="text-primary">*</span>
                 </label>
                 <input
                   className={field}
@@ -474,7 +499,10 @@ function AdminBranchesPage() {
                   onChange={(e) => setForm((p) => ({ ...p, is_active: e.target.checked }))}
                   className="rounded size-4 accent-primary"
                 />
-                <label htmlFor="branchActive" className="text-xs font-semibold text-foreground cursor-pointer">
+                <label
+                  htmlFor="branchActive"
+                  className="text-xs font-semibold text-foreground cursor-pointer"
+                >
                   {pick("تفعيل وظهور الفرع للزوار", "Active and visible to visitors")}
                 </label>
               </div>
@@ -493,7 +521,11 @@ function AdminBranchesPage() {
                   disabled={saveMutation.isPending}
                   className="rounded-xl bg-gold-gradient px-7 py-2.5 text-xs font-bold text-primary-foreground shadow-gold-glow cursor-pointer disabled:opacity-50"
                 >
-                  {saveMutation.isPending ? <Loader2 className="size-4 animate-spin inline" /> : t("save")}
+                  {saveMutation.isPending ? (
+                    <Loader2 className="size-4 animate-spin inline" />
+                  ) : (
+                    t("save")
+                  )}
                 </button>
               </div>
             </div>

@@ -13,7 +13,10 @@ export const Route = createFileRoute("/admin/")({
 function AdminOverview() {
   const { pick, money } = useI18n();
   const products = useQuery({ queryKey: ["products"], queryFn: fetchProducts });
-  const videos = useQuery({ queryKey: ["promo-videos-all"], queryFn: () => fetchPromoVideos(false) });
+  const videos = useQuery({
+    queryKey: ["promo-videos-all"],
+    queryFn: () => fetchPromoVideos(false),
+  });
   const orders = useQuery({
     queryKey: ["admin-orders"],
     queryFn: async () => {
@@ -79,7 +82,10 @@ function AdminOverview() {
         </ul>
       </div>
 
-      <Link to="/admin/videos" className="inline-flex rounded-full bg-teal px-5 py-2.5 text-sm font-semibold text-teal-foreground">
+      <Link
+        to="/admin/videos"
+        className="inline-flex rounded-full bg-teal px-5 py-2.5 text-sm font-semibold text-teal-foreground"
+      >
         {pick("إدارة الفيديوهات", "Manage videos")}
       </Link>
     </div>

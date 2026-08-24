@@ -28,11 +28,12 @@ const STORAGE_KEY = "hashem_store_settings_cache";
 
 export const defaultSettings: StoreSettings = {
   id: "default",
-  logo_url: "/hashem-logo.jpg",
+  logo_url: "/hashem-logo.png",
   hero_image_url: "https://images.unsplash.com/photo-1594035910387-fea47794261f?w=1200&q=80",
   announcement_bar_text: "شحن لجميع المناطق • بخور وعطور ملكية فاخرة • منتجات أصيلة ١٠٠٪",
   announcement_text_ar: "شحن لجميع المناطق • بخور وعطور ملكية فاخرة • منتجات أصيلة ١٠٠٪",
-  announcement_text_en: "Shipping to all areas • Royal incense & fine perfume • 100% genuine products",
+  announcement_text_en:
+    "Shipping to all areas • Royal incense & fine perfume • 100% genuine products",
   announcement_bar_active: true,
   announcement_enabled: true,
   whatsapp_number: ADMIN_WHATSAPP,
@@ -44,8 +45,10 @@ export const defaultSettings: StoreSettings = {
   bank_phone_transfer: BANK_DETAILS.phoneTransfer,
   about_title_ar: "هاشم للطيب — فخامة العبير الملكي",
   about_title_en: "Hashem Lelteeb — Royal Fragrance Luxury",
-  about_description_ar: "متجر هاشم للطيب، وجهتك الأولى للعطور المركزة الفاخرة والبخور الملكي واللبان الحوجري الأصيل. ننتقي أفضل المكونات الطبيعية والزيوت العطرية لنمنحك تجربة استثنائية تعكس أصالة وفخامة التراث العماني والخليجي.",
-  about_description_en: "Hashem Lelteeb boutique, your premier destination for concentrated fine perfumes, royal incense, and authentic Hojari luban.",
+  about_description_ar:
+    "متجر هاشم للطيب، وجهتك الأولى للعطور المركزة الفاخرة والبخور الملكي واللبان الحوجري الأصيل. ننتقي أفضل المكونات الطبيعية والزيوت العطرية لنمنحك تجربة استثنائية تعكس أصالة وفخامة التراث العماني والخليجي.",
+  about_description_en:
+    "Hashem Lelteeb boutique, your premier destination for concentrated fine perfumes, royal incense, and authentic Hojari luban.",
 };
 
 function getLocalSettings(): Partial<StoreSettings> {
@@ -104,9 +107,7 @@ export async function updateStoreSettings(settings: Partial<StoreSettings>): Pro
       updated_at: new Date().toISOString(),
     };
 
-    const { error } = await supabase
-      .from("store_settings")
-      .upsert(payload);
+    const { error } = await supabase.from("store_settings").upsert(payload);
 
     if (error) {
       console.warn("Supabase store_settings upsert error (local cache preserved):", error.message);

@@ -1,19 +1,16 @@
-import { useI18n } from "@/lib/i18n";
-import { useQuery } from "@tanstack/react-query";
-import { fetchStoreSettings } from "@/lib/settings";
-
-export function LogoMark({ size = 44, customUrl }: { size?: number | undefined; customUrl?: string | undefined }) {
-  const { data: settings } = useQuery({
-    queryKey: ["store-settings"],
-    queryFn: fetchStoreSettings,
-    staleTime: 1000 * 60 * 5,
-  });
-
-  const logoUrl = customUrl || settings?.logo_url || "/hashem-logo.jpg";
+export function LogoMark({
+  size = 44,
+  customUrl,
+}: {
+  size?: number | undefined;
+  customUrl?: string | undefined;
+}) {
+  // Always use the new logo file — ignore Supabase/localStorage cached URL
+  const logoUrl = customUrl || "/hashem-logo.png";
 
   return (
     <span
-      className="inline-block shrink-0 overflow-hidden rounded-full ring-1 ring-primary/30 bg-background/80"
+      className="inline-block shrink-0 overflow-hidden rounded-xl border border-primary/20 shadow-sm"
       style={{ width: size, height: size }}
       aria-hidden="true"
     >
@@ -40,7 +37,6 @@ export function LogoLockup({
   stacked?: boolean | undefined;
   customUrl?: string | undefined;
 }) {
-  const { t } = useI18n();
   return (
     <span className={`flex items-center gap-3 ${stacked ? "flex-col text-center" : ""}`}>
       <LogoMark size={size} customUrl={customUrl} />
@@ -48,8 +44,8 @@ export function LogoLockup({
         <span className="font-display text-sm tracking-[0.22em] text-gold-gradient sm:text-base font-bold">
           HASHEM
         </span>
-        <span className="mt-1 text-[10px] tracking-[0.32em] text-muted-foreground font-medium">
-          {t("brand_sub")} · هاشم
+        <span className="mt-0.5 text-[10px] tracking-[0.28em] text-muted-foreground font-medium">
+          FOR PERFUMES
         </span>
       </span>
     </span>

@@ -85,10 +85,7 @@ export async function createPromoVideo(input: {
 }
 
 export async function togglePromoVideo(id: string, is_active: boolean) {
-  const { error } = await supabase
-    .from("promotional_videos")
-    .update({ is_active })
-    .eq("id", id);
+  const { error } = await supabase.from("promotional_videos").update({ is_active }).eq("id", id);
   if (error) throw error;
 }
 

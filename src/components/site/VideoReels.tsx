@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { AnimatePresence, motion } from "framer-motion";
-import { Play, ShoppingBag, Volume2, VolumeX, X } from "lucide-react";
+import { AnimatePresence, motion, useInView } from "framer-motion";
+import { ShoppingBag, Volume2, VolumeX, X } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { fetchPromoVideos, type PromoVideo } from "@/lib/videos";
 
@@ -17,6 +17,15 @@ function ReelCard({
 }) {
   const { pick } = useI18n();
   const ref = useRef<HTMLVideoElement>(null);
+  const isInView = useInView(ref, { amount: 0.5 });
+
+  useEffect(() => {
+    if (isInView) {
+      ref.current?.play().catch(() => {});
+    } else {
+      ref.current?.pause();
+    }
+  }, [isInView]);
 
   return (
     <motion.button
@@ -26,11 +35,6 @@ function ReelCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ type: "spring", stiffness: 120, damping: 18, delay: index * 0.08 }}
-      onMouseEnter={() => void ref.current?.play()}
-      onMouseLeave={() => {
-        ref.current?.pause();
-        if (ref.current) ref.current.currentTime = 0;
-      }}
       className="glass group relative w-[15rem] shrink-0 snap-start overflow-hidden rounded-3xl p-0 text-start"
     >
       <video
@@ -45,11 +49,6 @@ function ReelCard({
       />
       <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/70 to-transparent p-4 text-sm font-semibold text-teal-foreground">
         {pick(video.title_ar, video.title_en)}
-      </span>
-      <span className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-90 transition-opacity group-hover:opacity-0">
-        <span className="flex size-12 items-center justify-center rounded-full bg-gold-gradient text-primary-foreground shadow-gold-glow">
-          <Play className="size-5" />
-        </span>
       </span>
     </motion.button>
   );

@@ -46,7 +46,7 @@ function Hero() {
     queryFn: fetchStoreSettings,
   });
 
-  const whatsapp = settings?.whatsapp_number || "96877036097";
+  const whatsapp = settings?.whatsapp_number || "96877380145";
 
   return (
     <section className="relative overflow-hidden px-4 pb-14 pt-10 sm:px-6 sm:pt-16">
@@ -91,7 +91,7 @@ function Hero() {
           >
             <Link
               to="/shop"
-              className="group inline-flex items-center gap-2 rounded-full bg-teal px-8 py-3.5 text-sm font-bold text-teal-foreground shadow-soft hover:opacity-95 transition-all"
+              className="group inline-flex items-center gap-2 rounded-full bg-gold-gradient px-8 py-3.5 text-sm font-bold text-primary-foreground shadow-gold-glow hover:opacity-90 transition-all"
             >
               {t("cta_explore")}
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
@@ -101,7 +101,7 @@ function Hero() {
               href={`https://wa.me/${whatsapp}`}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-emerald-600/40 bg-emerald-600/10 px-6 py-3.5 text-sm font-semibold text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all"
+              className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-6 py-3.5 text-sm font-semibold text-primary hover:bg-gold-gradient hover:text-primary-foreground transition-all shadow-sm"
             >
               <MessageCircle className="size-4" />
               <span>{t("direct_whatsapp_order")}</span>
@@ -119,10 +119,13 @@ function Hero() {
           <div className="absolute inset-6 rounded-full border border-primary/40 shadow-gold-glow" />
           <div className="absolute inset-14 rounded-full bg-gold-gradient opacity-15 blur-2xl" />
           <div className="glass float-slow relative z-10 flex size-3/4 items-center justify-center overflow-hidden rounded-full border border-primary/30">
-            <img
-              src={settings?.hero_image_url || "https://images.unsplash.com/photo-1594035910387-fea47794261f?w=1200&q=80"}
-              alt="هاشم للطيب"
-              className="size-full object-cover"
+            <video 
+              src="/hero-video.mp4" 
+              autoPlay 
+              loop 
+              muted 
+              playsInline 
+              className="size-full object-cover scale-110" 
             />
           </div>
           <div className="absolute bottom-2 z-20 h-10 w-2/3 rounded-[100%] bg-foreground/10 blur-xl" />
@@ -177,7 +180,7 @@ function Home() {
   const branches = useQuery({ queryKey: ["branches"], queryFn: () => fetchBranches(true) });
 
   const allProducts = products.data ?? [];
-  const featured = allProducts.filter((p) => p.is_featured).slice(0, 6);
+  const featured = allProducts.filter((p) => p.is_featured);
   const discounted = allProducts.filter(
     (p) => p.discount_price && p.discount_price > 0 && p.discount_price < p.price,
   );
@@ -220,7 +223,7 @@ function Home() {
                 className="glass group relative block overflow-hidden rounded-3xl border border-border/80 shadow-xs hover:border-primary/50 transition-all"
               >
                 <img
-                  src={c.image_url ?? "/hashem-logo.jpg"}
+                  src={c.image_url ?? "/hashem-logo.png"}
                   alt={pick(c.name_ar, c.name_en)}
                   loading="lazy"
                   className="h-56 w-full object-cover transition-transform duration-700 group-hover:scale-110 sm:h-72"
@@ -289,13 +292,29 @@ function Home() {
 
         {products.isLoading ? (
           <ProductGridSkeleton />
-        ) : (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-3 sm:gap-6">
-            {(featured.length > 0 ? featured : allProducts.slice(0, 6)).map((p, i) => (
-              <ProductCard key={p.id} product={p} index={i} />
-            ))}
-          </div>
-        )}
+        ) : (() => {
+          const baseList = allProducts;
+          let items = [...baseList];
+          while (items.length > 0 && items.length < 10) {
+            items = [...items, ...baseList];
+          }
+          return (
+            <div className="overflow-hidden">
+              <div className="marquee-track-slow">
+                {items.map((p, i) => (
+                  <div key={`a-${i}`} className="w-[170px] sm:w-[250px] shrink-0 px-2 sm:px-3" dir="rtl">
+                    <ProductCard product={p} index={0} />
+                  </div>
+                ))}
+                {items.map((p, i) => (
+                  <div key={`b-${i}`} className="w-[170px] sm:w-[250px] shrink-0 px-2 sm:px-3" dir="rtl">
+                    <ProductCard product={p} index={0} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
       </section>
 
       {/* Branches Preview Section */}

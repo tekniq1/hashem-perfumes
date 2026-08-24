@@ -112,7 +112,11 @@ function AdminProducts() {
     }
   };
 
-  const autoTranslateField = async (sourceText: string, targetField: "name_ar" | "name_en" | "description_ar" | "description_en", targetLang: "ar" | "en") => {
+  const autoTranslateField = async (
+    sourceText: string,
+    targetField: "name_ar" | "name_en" | "description_ar" | "description_en",
+    targetLang: "ar" | "en",
+  ) => {
     if (!sourceText.trim() || draft[targetField].trim()) return;
     try {
       const translated = await translateText(sourceText, targetLang);
@@ -217,7 +221,11 @@ function AdminProducts() {
               className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-500 bg-amber-500/10 border border-amber-500/30 px-2.5 py-1 rounded-lg hover:bg-amber-500/20 transition-all cursor-pointer disabled:opacity-50"
               title="ترجمة تلقائية للغات الأخرى"
             >
-              {translating ? <Loader2 className="size-3 animate-spin" /> : <Sparkles className="size-3" />}
+              {translating ? (
+                <Loader2 className="size-3 animate-spin" />
+              ) : (
+                <Sparkles className="size-3" />
+              )}
               <span>{translating ? t("auto_translating") : t("auto_translate_btn")}</span>
             </button>
             {draft.id ? (
@@ -341,11 +349,19 @@ function AdminProducts() {
           <span className={hint}>{t("images")}</span>
           <div className="flex flex-wrap gap-2">
             {draft.images.map((url) => (
-              <span key={url} className="relative size-16 overflow-hidden rounded-lg border border-border">
+              <span
+                key={url}
+                className="relative size-16 overflow-hidden rounded-lg border border-border"
+              >
                 <img src={url} alt="" className="size-full object-cover" />
                 <button
                   type="button"
-                  onClick={() => set("images", draft.images.filter((u) => u !== url))}
+                  onClick={() =>
+                    set(
+                      "images",
+                      draft.images.filter((u) => u !== url),
+                    )
+                  }
                   className="absolute end-0 top-0 rounded-bl-lg bg-background/85 p-0.5 text-destructive"
                   aria-label={t("remove")}
                 >

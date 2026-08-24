@@ -12,7 +12,7 @@ export function Footer() {
     queryFn: fetchStoreSettings,
   });
 
-  const whatsapp = settings?.whatsapp_number || "96877036097";
+  const whatsapp = settings?.whatsapp_number || "96877380145";
   const instagram = settings?.instagram_handle || "hashem_lelteeb";
   const email = settings?.email || "abdualhidry@gmail.com";
 
@@ -22,9 +22,7 @@ export function Footer() {
         <div className="space-y-4">
           <LogoLockup size={52} />
           <p className="text-xs leading-relaxed text-muted-foreground">{t("tagline")}</p>
-          <p className="text-xs leading-relaxed text-muted-foreground/80">
-            {t("hero_sub")}
-          </p>
+          <p className="text-xs leading-relaxed text-muted-foreground/80">{t("hero_sub")}</p>
         </div>
 
         <div className="space-y-3">
@@ -52,20 +50,18 @@ export function Footer() {
         </div>
 
         <div className="space-y-3">
-          <h3 className="font-display text-sm font-semibold text-foreground">{t("payment_delivery")}</h3>
+          <h3 className="font-display text-sm font-semibold text-foreground">
+            {t("payment_delivery")}
+          </h3>
           <div className="space-y-2 text-xs text-muted-foreground">
             <p className="flex items-center gap-1.5 font-medium text-foreground">
               {t("bank_transfer_muscat")}
             </p>
-            <p className="text-[11px] text-muted-foreground">
-              {t("payment_advance_note")}
-            </p>
+            <p className="text-[11px] text-muted-foreground">{t("payment_advance_note")}</p>
             <p className="flex items-center gap-1.5 font-medium text-foreground mt-2">
               {t("delivery_pickup_title")}
             </p>
-            <p className="text-[11px] text-muted-foreground">
-              {t("delivery_pickup_desc")}
-            </p>
+            <p className="text-[11px] text-muted-foreground">{t("delivery_pickup_desc")}</p>
           </div>
         </div>
 
@@ -79,7 +75,9 @@ export function Footer() {
               className="flex items-center gap-2 text-emerald-600 hover:text-emerald-500 font-medium transition-colors"
             >
               <MessageCircle className="size-4" />
-              <span>{t("whatsapp_label")}: +{whatsapp}</span>
+              <span>
+                {t("whatsapp_label")}: +{whatsapp}
+              </span>
             </a>
             <a
               href={`https://instagram.com/${instagram}`}

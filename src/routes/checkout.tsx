@@ -33,7 +33,8 @@ export const Route = createFileRoute("/checkout")({
       { title: "إتمام الطلب — هاشم للطيب | Checkout" },
       {
         name: "description",
-        content: "إتمام طلب العطور والبخور الملكي من متجر هاشم للطيب والدفع عبر التحويل البنكي والتواصل عبر واتساب.",
+        content:
+          "إتمام طلب العطور والبخور الملكي من متجر هاشم للطيب والدفع عبر التحويل البنكي والتواصل عبر واتساب.",
       },
     ],
   }),
@@ -239,14 +240,15 @@ function CheckoutPage() {
               <h2 className="font-display text-xl font-bold text-foreground">
                 {t("step_details")}
               </h2>
-              <p className="text-xs text-muted-foreground mt-1">
-                {t("checkout_enter_details")}
-              </p>
+              <p className="text-xs text-muted-foreground mt-1">{t("checkout_enter_details")}</p>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label htmlFor="checkout-name" className="text-xs font-medium text-muted-foreground block mb-1.5">
+                <label
+                  htmlFor="checkout-name"
+                  className="text-xs font-medium text-muted-foreground block mb-1.5"
+                >
                   {t("full_name")} <span className="text-primary">*</span>
                 </label>
                 <input
@@ -262,7 +264,10 @@ function CheckoutPage() {
               </div>
 
               <div>
-                <label htmlFor="checkout-phone" className="text-xs font-medium text-muted-foreground block mb-1.5">
+                <label
+                  htmlFor="checkout-phone"
+                  className="text-xs font-medium text-muted-foreground block mb-1.5"
+                >
                   {t("phone")} <span className="text-primary">*</span>
                 </label>
                 <input
@@ -279,7 +284,10 @@ function CheckoutPage() {
               </div>
 
               <div>
-                <label htmlFor="checkout-email" className="text-xs font-medium text-muted-foreground block mb-1.5">
+                <label
+                  htmlFor="checkout-email"
+                  className="text-xs font-medium text-muted-foreground block mb-1.5"
+                >
                   {t("email")} ({t("checkout_email_optional")})
                 </label>
                 <input
@@ -365,9 +373,7 @@ function CheckoutPage() {
             {/* Notice */}
             <div className="flex items-start gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-xs text-amber-700 dark:text-amber-300">
               <Info className="size-5 shrink-0 mt-0.5" />
-              <p className="leading-relaxed">
-                {t("shipping_notice")}
-              </p>
+              <p className="leading-relaxed">{t("shipping_notice")}</p>
             </div>
 
             {deliveryMethod === "delivery" ? (
@@ -392,8 +398,14 @@ function CheckoutPage() {
                     disabled={locating}
                     className="inline-flex items-center gap-2 rounded-xl border border-primary/40 bg-primary/10 px-4 py-2.5 text-xs font-semibold text-primary hover:bg-primary hover:text-primary-foreground transition-all cursor-pointer"
                   >
-                    {locating ? <Loader2 className="size-4 animate-spin" /> : <MapPin className="size-4" />}
-                    <span>{coords ? t("checkout_update_location") : t("checkout_detect_location")}</span>
+                    {locating ? (
+                      <Loader2 className="size-4 animate-spin" />
+                    ) : (
+                      <MapPin className="size-4" />
+                    )}
+                    <span>
+                      {coords ? t("checkout_update_location") : t("checkout_detect_location")}
+                    </span>
                   </button>
 
                   {coords ? (
@@ -462,11 +474,10 @@ function CheckoutPage() {
         {step === 2 ? (
           <div className="space-y-6">
             <div>
-              <h2 className="font-display text-xl font-bold text-foreground">
-                {t("step_review")}
-              </h2>
+              <h2 className="font-display text-xl font-bold text-foreground">{t("step_review")}</h2>
               <p className="text-xs text-muted-foreground mt-1">
-                راجع تفاصيل طلبك وحساب بنك مسقط، وأدخل رقم الحوالة أو صورة الإشعار ثم اضغط على زر إرسال الطلب.
+                راجع تفاصيل طلبك وحساب بنك مسقط، وأدخل رقم الحوالة أو صورة الإشعار ثم اضغط على زر
+                إرسال الطلب.
               </p>
             </div>
 
@@ -477,29 +488,55 @@ function CheckoutPage() {
                 <span>{t("bank_details_title")}</span>
               </div>
               <p className="text-xs text-muted-foreground">
-                يرجى تحويل مبلغ الطلب <span className="font-bold text-foreground">{money(subtotal)}</span> إلى الحساب البنكي التالي قبل أو فور إرسال رسالة الواتساب:
+                يرجى تحويل مبلغ الطلب{" "}
+                <span className="font-bold text-foreground">{money(subtotal)}</span> إلى الحساب
+                البنكي التالي قبل أو فور إرسال رسالة الواتساب:
               </p>
 
               <div className="grid gap-2 sm:grid-cols-2 pt-2 text-xs">
                 <div className="bg-background/80 p-3 rounded-xl border border-border">
                   <span className="text-muted-foreground block text-[11px]">البنك:</span>
-                  <span className="font-semibold text-foreground">{settings?.bank_name || "بنك مسقط (Bank Muscat)"}</span>
+                  <span className="font-semibold text-foreground">
+                    {settings?.bank_name || "بنك مسقط (Bank Muscat)"}
+                  </span>
                 </div>
 
                 <div className="bg-background/80 p-3 rounded-xl border border-border">
-                  <span className="text-muted-foreground block text-[11px]">{t("account_number")}:</span>
-                  <span dir="ltr" className="font-mono font-bold text-primary">{settings?.bank_account_number || "0369063092490012"}</span>
+                  <span className="text-muted-foreground block text-[11px]">
+                    {t("account_number")}:
+                  </span>
+                  <span dir="ltr" className="font-mono font-bold text-primary">
+                    {settings?.bank_account_number || "0369063092490012"}
+                  </span>
                 </div>
 
                 <div className="bg-background/80 p-3 rounded-xl border border-border">
-                  <span className="text-muted-foreground block text-[11px]">{t("recipient_name")}:</span>
-                  <span className="font-semibold text-foreground">{settings?.bank_recipient_name || "ABDULMALIK"}</span>
+                  <span className="text-muted-foreground block text-[11px]">
+                    {t("recipient_name")}:
+                  </span>
+                  <span className="font-semibold text-foreground">
+                    {settings?.bank_recipient_name || "ABDULMALIK"}
+                  </span>
                 </div>
-
                 <div className="bg-background/80 p-3 rounded-xl border border-border">
-                  <span className="text-muted-foreground block text-[11px]">{t("phone_transfer")}:</span>
-                  <span dir="ltr" className="font-mono font-bold text-emerald-600">{settings?.bank_phone_transfer || "77036097"}</span>
+                  <span className="text-muted-foreground block text-[11px]">
+                    {t("phone_transfer")}:
+                  </span>
+                  <span dir="ltr" className="font-mono font-bold text-emerald-600">
+                    {settings?.bank_phone_transfer || "77036097"}
+                  </span>
                 </div>
+              </div>
+
+              {/* تنبيه: إرسال الصورة مباشرة في واتساب */}
+              <div className="flex items-start gap-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3 text-xs text-emerald-700 dark:text-emerald-300">
+                <span className="text-base leading-none mt-0.5">📱</span>
+                <p className="leading-relaxed">
+                  <span className="font-bold block mb-0.5">تنبيه مهم:</span>
+                  بعد إرسال رسالة الطلب عبر واتساب، يرجى إرسال{" "}
+                  <span className="font-bold">صورة إشعار التحويل</span> مباشرةً كصورة في المحادثة
+                  لضمان سرعة التأكيد.
+                </p>
               </div>
             </div>
 
@@ -536,7 +573,9 @@ function CheckoutPage() {
                       className="size-16 rounded-lg object-cover border border-border"
                     />
                     <div className="flex-1 text-xs space-y-1">
-                      <span className="font-semibold text-foreground block">تم إرفاق إشعار التحويل بنجاح</span>
+                      <span className="font-semibold text-foreground block">
+                        تم إرفاق إشعار التحويل بنجاح
+                      </span>
                       <a
                         href={receiptImageUrl}
                         target="_blank"
@@ -562,7 +601,11 @@ function CheckoutPage() {
                     ) : (
                       <Upload className="size-4" />
                     )}
-                    <span>{uploadingReceipt ? t("checkout_receipt_uploading") : t("checkout_receipt_choose")}</span>
+                    <span>
+                      {uploadingReceipt
+                        ? t("checkout_receipt_uploading")
+                        : t("checkout_receipt_choose")}
+                    </span>
                     <input
                       type="file"
                       accept="image/*"
@@ -584,16 +627,21 @@ function CheckoutPage() {
               </h3>
               <div className="divide-y divide-border/60 rounded-2xl border border-border/70 bg-background/50 p-4 space-y-2">
                 {lines.map((l) => (
-                  <div key={l.id} className="flex items-center justify-between pt-2 first:pt-0 text-xs">
+                  <div
+                    key={l.id}
+                    className="flex items-center justify-between pt-2 first:pt-0 text-xs"
+                  >
                     <div className="flex items-center gap-3">
                       <img
-                        src={l.image ?? "/hashem-logo.jpg"}
+                        src={l.image ?? "/hashem-logo.png"}
                         alt={pick(l.name_ar, l.name_en)}
                         className="size-10 rounded-lg object-cover"
                       />
                       <div>
                         <p className="font-medium text-foreground">{pick(l.name_ar, l.name_en)}</p>
-                        <p className="text-muted-foreground">{t("quantity")}: {l.qty}</p>
+                        <p className="text-muted-foreground">
+                          {t("quantity")}: {l.qty}
+                        </p>
                       </div>
                     </div>
                     <span className="font-bold text-primary">{money(l.qty * l.price)}</span>
@@ -610,11 +658,15 @@ function CheckoutPage() {
               </div>
               <div className="flex justify-between text-[11px] text-muted-foreground">
                 <span>{t("delivery_method")}:</span>
-                <span>{deliveryMethod === "pickup" ? t("checkout_pickup") : t("checkout_delivery_cost")}</span>
+                <span>
+                  {deliveryMethod === "pickup" ? t("checkout_pickup") : t("checkout_delivery_cost")}
+                </span>
               </div>
               <div className="flex justify-between text-[11px] text-muted-foreground">
                 <span>{t("customer")}:</span>
-                <span>{name} ({phone})</span>
+                <span>
+                  {name} ({phone})
+                </span>
               </div>
               {deliveryMethod === "delivery" && address ? (
                 <div className="flex justify-between text-[11px] text-muted-foreground">
@@ -625,7 +677,9 @@ function CheckoutPage() {
               {transferReference ? (
                 <div className="flex justify-between text-[11px] text-muted-foreground">
                   <span>رقم الحوالة:</span>
-                  <span className="font-mono text-foreground font-semibold">{transferReference}</span>
+                  <span className="font-mono text-foreground font-semibold">
+                    {transferReference}
+                  </span>
                 </div>
               ) : null}
               {notes ? (
@@ -651,7 +705,11 @@ function CheckoutPage() {
                 disabled={busy || uploadingReceipt}
                 className="flex items-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 px-8 py-3 text-xs font-bold text-white shadow-lg disabled:opacity-50 transition-all cursor-pointer"
               >
-                {busy ? <Loader2 className="size-4 animate-spin" /> : <MessageCircle className="size-4" />}
+                {busy ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <MessageCircle className="size-4" />
+                )}
                 <span>{t("confirm_and_whatsapp")}</span>
               </button>
             </div>

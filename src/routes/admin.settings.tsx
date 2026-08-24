@@ -51,7 +51,11 @@ function AdminSettingsPage() {
     mutationFn: (data: Partial<StoreSettings>) => {
       const payload: Partial<StoreSettings> = {
         ...data,
-        announcement_bar_text: data.announcement_text_ar || data.announcement_bar_text || data.announcement_text_en || "",
+        announcement_bar_text:
+          data.announcement_text_ar ||
+          data.announcement_bar_text ||
+          data.announcement_text_en ||
+          "",
       };
       return updateStoreSettings(payload);
     },
@@ -60,7 +64,11 @@ function AdminSettingsPage() {
       toast.success(t("saved"));
     },
     onError: (err) => {
-      toast.error(err instanceof Error ? err.message : pick("حدث خطأ أثناء حفظ الإعدادات", "Error saving settings"));
+      toast.error(
+        err instanceof Error
+          ? err.message
+          : pick("حدث خطأ أثناء حفظ الإعدادات", "Error saving settings"),
+      );
     },
   });
 
@@ -72,7 +80,9 @@ function AdminSettingsPage() {
       setForm(updated);
       await updateStoreSettings(updated);
       qc.invalidateQueries({ queryKey: ["store-settings"] });
-      toast.success(pick("تم رفع وحفظ الشعار الجديد بنجاح!", "New logo uploaded and saved successfully!"));
+      toast.success(
+        pick("تم رفع وحفظ الشعار الجديد بنجاح!", "New logo uploaded and saved successfully!"),
+      );
     } catch (e) {
       toast.error(pick("فشل رفع صورة الشعار", "Failed to upload logo image"));
     } finally {
@@ -88,7 +98,12 @@ function AdminSettingsPage() {
       setForm(updated);
       await updateStoreSettings(updated);
       qc.invalidateQueries({ queryKey: ["store-settings"] });
-      toast.success(pick("تم رفع وحفظ صورة الواجهة الجديدة بنجاح!", "New hero image uploaded and saved successfully!"));
+      toast.success(
+        pick(
+          "تم رفع وحفظ صورة الواجهة الجديدة بنجاح!",
+          "New hero image uploaded and saved successfully!",
+        ),
+      );
     } catch (e) {
       toast.error(pick("فشل رفع صورة الواجهة", "Failed to upload hero image"));
     } finally {
@@ -117,7 +132,9 @@ function AdminSettingsPage() {
         announcement_text_en: finalEn,
         announcement_bar_text: finalAr || finalEn,
       }));
-      toast.success(pick("تمت ترجمة الشريط الإعلاني بنجاح", "Announcement bar auto-translated successfully"));
+      toast.success(
+        pick("تمت ترجمة الشريط الإعلاني بنجاح", "Announcement bar auto-translated successfully"),
+      );
     } catch {
       toast.error(pick("تعذرت ترجمة الشريط الإعلاني", "Failed to translate announcement text"));
     } finally {
@@ -126,7 +143,13 @@ function AdminSettingsPage() {
   };
 
   const autoTranslateAbout = async () => {
-    if (!form.about_title_ar && !form.about_title_en && !form.about_description_ar && !form.about_description_en) return;
+    if (
+      !form.about_title_ar &&
+      !form.about_title_en &&
+      !form.about_description_ar &&
+      !form.about_description_en
+    )
+      return;
     setTranslatingAbout(true);
     try {
       let titleAr = form.about_title_ar || "";
@@ -162,7 +185,11 @@ function AdminSettingsPage() {
   };
 
   if (isLoading) {
-    return <div className="p-12 text-center text-muted-foreground">{pick("جاري تحميل الإعدادات...", "Loading settings...")}</div>;
+    return (
+      <div className="p-12 text-center text-muted-foreground">
+        {pick("جاري تحميل الإعدادات...", "Loading settings...")}
+      </div>
+    );
   }
 
   return (
@@ -207,7 +234,7 @@ function AdminSettingsPage() {
             </span>
             <div className="relative size-32 sm:size-36 rounded-full overflow-hidden border-4 border-primary shadow-gold-glow bg-black/40 flex items-center justify-center">
               <img
-                src={form.hero_image_url || "/hashem-logo.jpg"}
+                src={form.hero_image_url || "/hashem-logo.png"}
                 alt={pick("معاينة الواجهة", "Hero preview")}
                 className="size-full object-cover"
               />
@@ -221,8 +248,16 @@ function AdminSettingsPage() {
                 {pick("اختر صورة جديدة من جهازك:", "Choose a new image from device:")}
               </label>
               <label className="inline-flex items-center justify-center gap-2 rounded-xl bg-gold-gradient px-5 py-3 text-xs font-bold text-primary-foreground shadow-gold-glow cursor-pointer transition-all hover:opacity-95 w-full sm:w-auto">
-                {uploadingHero ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
-                <span>{uploadingHero ? pick("جاري الرفع والحفظ...", "Uploading and saving...") : pick("رفع صورة هيرو جديدة (Upload)", "Upload New Hero Image")}</span>
+                {uploadingHero ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <Upload className="size-4" />
+                )}
+                <span>
+                  {uploadingHero
+                    ? pick("جاري الرفع والحفظ...", "Uploading and saving...")
+                    : pick("رفع صورة هيرو جديدة (Upload)", "Upload New Hero Image")}
+                </span>
                 <input
                   type="file"
                   accept="image/*"
@@ -277,8 +312,16 @@ function AdminSettingsPage() {
                 {pick("رفع شعار جديد:", "Upload New Logo:")}
               </label>
               <label className="inline-flex items-center justify-center gap-2 rounded-xl bg-gold-gradient px-5 py-3 text-xs font-bold text-primary-foreground shadow-gold-glow cursor-pointer transition-all hover:opacity-95 w-full sm:w-auto">
-                {uploadingLogo ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
-                <span>{uploadingLogo ? pick("جاري الرفع والحفظ...", "Uploading and saving...") : pick("رفع لوجو جديد من جهازك", "Upload New Logo")}</span>
+                {uploadingLogo ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <Upload className="size-4" />
+                )}
+                <span>
+                  {uploadingLogo
+                    ? pick("جاري الرفع والحفظ...", "Uploading and saving...")
+                    : pick("رفع لوجو جديد من جهازك", "Upload New Logo")}
+                </span>
                 <input
                   type="file"
                   accept="image/*"
@@ -299,7 +342,7 @@ function AdminSettingsPage() {
                 className={field}
                 value={form.logo_url || ""}
                 onChange={(e) => setForm((prev) => ({ ...prev, logo_url: e.target.value }))}
-                placeholder="/hashem-logo.jpg"
+                placeholder="/hashem-logo.png"
               />
             </div>
           </div>
@@ -311,7 +354,9 @@ function AdminSettingsPage() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5 text-primary font-bold text-base">
             <Megaphone className="size-5" />
-            <span>{pick("الشريط الإعلاني العلوي (Top Announcement Bar)", "Top Announcement Bar")}</span>
+            <span>
+              {pick("الشريط الإعلاني العلوي (Top Announcement Bar)", "Top Announcement Bar")}
+            </span>
           </div>
 
           <div className="flex items-center gap-3">
@@ -322,8 +367,14 @@ function AdminSettingsPage() {
               className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-500 bg-amber-500/10 border border-amber-500/30 px-2.5 py-1 rounded-lg hover:bg-amber-500/20 transition-all cursor-pointer disabled:opacity-50"
               title="ترجمة تلقائية / Auto-Translate"
             >
-              {translatingAnnouncement ? <Loader2 className="size-3 animate-spin" /> : <Sparkles className="size-3" />}
-              <span>{translatingAnnouncement ? t("auto_translating") : t("auto_translate_btn")}</span>
+              {translatingAnnouncement ? (
+                <Loader2 className="size-3 animate-spin" />
+              ) : (
+                <Sparkles className="size-3" />
+              )}
+              <span>
+                {translatingAnnouncement ? t("auto_translating") : t("auto_translate_btn")}
+              </span>
             </button>
 
             <label className="flex items-center gap-2 text-xs cursor-pointer bg-accent/60 px-3 py-1.5 rounded-xl border border-border">
@@ -331,7 +382,11 @@ function AdminSettingsPage() {
                 type="checkbox"
                 checked={form.announcement_bar_active ?? true}
                 onChange={(e) =>
-                  setForm((prev) => ({ ...prev, announcement_bar_active: e.target.checked, announcement_enabled: e.target.checked }))
+                  setForm((prev) => ({
+                    ...prev,
+                    announcement_bar_active: e.target.checked,
+                    announcement_enabled: e.target.checked,
+                  }))
                 }
                 className="rounded accent-primary size-4"
               />
@@ -390,15 +445,16 @@ function AdminSettingsPage() {
         <div className="grid gap-4 sm:grid-cols-3">
           <div>
             <label className="text-xs font-medium text-muted-foreground block mb-1.5">
-              {pick("رقم الواتساب المعتمد (لاستقبال الطلبات)", "Official WhatsApp Number (For Orders)")}
+              {pick(
+                "رقم الواتساب المعتمد (لاستقبال الطلبات)",
+                "Official WhatsApp Number (For Orders)",
+              )}
             </label>
             <input
               className={field}
               dir="ltr"
               value={form.whatsapp_number || ""}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, whatsapp_number: e.target.value }))
-              }
+              onChange={(e) => setForm((prev) => ({ ...prev, whatsapp_number: e.target.value }))}
               placeholder="96877036097"
             />
           </div>
@@ -411,9 +467,7 @@ function AdminSettingsPage() {
               className={field}
               dir="ltr"
               value={form.instagram_handle || ""}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, instagram_handle: e.target.value }))
-              }
+              onChange={(e) => setForm((prev) => ({ ...prev, instagram_handle: e.target.value }))}
               placeholder="hashem_lelteeb"
             />
           </div>
@@ -520,7 +574,11 @@ function AdminSettingsPage() {
             className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-500 bg-amber-500/10 border border-amber-500/30 px-2.5 py-1 rounded-lg hover:bg-amber-500/20 transition-all cursor-pointer disabled:opacity-50"
             title="ترجمة تلقائية / Auto-Translate"
           >
-            {translatingAbout ? <Loader2 className="size-3 animate-spin" /> : <Sparkles className="size-3" />}
+            {translatingAbout ? (
+              <Loader2 className="size-3 animate-spin" />
+            ) : (
+              <Sparkles className="size-3" />
+            )}
             <span>{translatingAbout ? t("auto_translating") : t("auto_translate_btn")}</span>
           </button>
         </div>

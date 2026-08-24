@@ -1,15 +1,22 @@
 // Server-side Supabase client with service role key - bypasses RLS.
 // Use this for admin operations in server functions and server routes only.
 // For user-authenticated queries (with RLS), use the auth middleware instead.
-import { createClient } from '@supabase/supabase-js';
-import type { Database } from './types';
+import { createClient } from "@supabase/supabase-js";
+import type { Database } from "./types";
 
 const DEFAULT_SUPABASE_URL = "https://mfsssgyapeewlyznxjiz.supabase.co";
-const DEFAULT_SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1mc3NzZ3lhcGVld2x5em54aml6Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDQ2NjQ0MCwiZXhwIjoyMDc2MDQyNDQwfQ.hqifzYoo9eaB840y619ab_7-VwjeOuvg3eHaUnll948";
+const DEFAULT_SUPABASE_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1mc3NzZ3lhcGVld2x5em54aml6Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDQ2NjQ0MCwiZXhwIjoyMDc2MDQyNDQwfQ.hqifzYoo9eaB840y619ab_7-VwjeOuvg3eHaUnll948";
 
 function createSupabaseAdminClient() {
-  const SUPABASE_URL = (typeof process !== 'undefined' && (process.env['SUPABASE_URL'] || process.env['VITE_SUPABASE_URL'])) || DEFAULT_SUPABASE_URL;
-  const SUPABASE_SERVICE_ROLE_KEY = (typeof process !== 'undefined' && (process.env['SUPABASE_SERVICE_ROLE_KEY'] || process.env['SUPABASE_ANON_KEY'])) || DEFAULT_SUPABASE_KEY;
+  const SUPABASE_URL =
+    (typeof process !== "undefined" &&
+      (process.env["SUPABASE_URL"] || process.env["VITE_SUPABASE_URL"])) ||
+    DEFAULT_SUPABASE_URL;
+  const SUPABASE_SERVICE_ROLE_KEY =
+    (typeof process !== "undefined" &&
+      (process.env["SUPABASE_SERVICE_ROLE_KEY"] || process.env["SUPABASE_ANON_KEY"])) ||
+    DEFAULT_SUPABASE_KEY;
 
   return createClient<Database>(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
     auth: {

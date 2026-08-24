@@ -13,7 +13,8 @@ export const Route = createFileRoute("/offers")({
       { title: "العروض الحصرية — هاشم للطيب | Exclusive Offers" },
       {
         name: "description",
-        content: "أفضل العروض والتخفيضات الحصرية على العطور الملكية والبخور واللبان من متجر هاشم للطيب.",
+        content:
+          "أفضل العروض والتخفيضات الحصرية على العطور الملكية والبخور واللبان من متجر هاشم للطيب.",
       },
     ],
   }),
@@ -59,9 +60,7 @@ function OffersPage() {
         <div className="glass rounded-2xl p-12 text-center max-w-lg mx-auto space-y-4">
           <Sparkles className="size-10 text-primary mx-auto opacity-70" />
           <h3 className="font-display text-lg text-foreground">{t("no_offers_now")}</h3>
-          <p className="text-xs text-muted-foreground">
-            {t("offers_explore_desc")}
-          </p>
+          <p className="text-xs text-muted-foreground">{t("offers_explore_desc")}</p>
           <Link
             to="/shop"
             className="inline-block rounded-xl bg-gold-gradient px-6 py-2.5 text-xs font-semibold text-primary-foreground shadow-gold-glow"

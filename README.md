@@ -5,6 +5,7 @@
 ---
 
 ## 🌟 الميزات الرئيسية
+
 - 🛍️ **تصفح وشراء المنتجات الملكية**: عطور فاخرة، بخور، لبان حوجري، ومخلطات.
 - 📱 **طلب فوري ومطابق عبر WhatsApp**: رسالة طلب منسقة تلقائياً تُرسل إلى رقم المتجر `+96877036097`.
 - 💳 **الدفع عبر التحويل البنكي (بنك مسقط)**: إمكانية إدخال رقم الحوالة ورفع صورة إشعار التحويل.
@@ -20,6 +21,7 @@
 ---
 
 ## 🛠️ التقنيات المستخدمة
+
 - **Frontend**: React 19, TypeScript, Tailwind CSS, Framer Motion, Lucide Icons, TanStack Start & Router.
 - **Backend / Database**: Supabase (PostgreSQL, Auth, Storage, Row Level Security).
 - **Typography**: خط Alexandria العربي الملكي مع Tajawal و Plus Jakarta Sans و Cinzel.

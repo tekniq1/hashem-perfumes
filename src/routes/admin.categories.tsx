@@ -138,7 +138,9 @@ function AdminCategoriesPage() {
       if (editing) {
         await updateCategory(editing.id, payload);
       } else {
-        await createCategory(payload as { name_ar: string; name_en: string; slug: string; image_url?: string });
+        await createCategory(
+          payload as { name_ar: string; name_en: string; slug: string; image_url?: string },
+        );
       }
     },
     onSuccess: () => {
@@ -148,7 +150,11 @@ function AdminCategoriesPage() {
       setEditing(null);
     },
     onError: (err) => {
-      toast.error(err instanceof Error ? err.message : pick("حدث خطأ أثناء حفظ التصنيف", "Error saving category"));
+      toast.error(
+        err instanceof Error
+          ? err.message
+          : pick("حدث خطأ أثناء حفظ التصنيف", "Error saving category"),
+      );
     },
   });
 
@@ -159,7 +165,9 @@ function AdminCategoriesPage() {
       toast.success(t("deleted"));
     },
     onError: (err) => {
-      toast.error(err instanceof Error ? err.message : pick("تعذر حذف التصنيف", "Failed to delete category"));
+      toast.error(
+        err instanceof Error ? err.message : pick("تعذر حذف التصنيف", "Failed to delete category"),
+      );
     },
   });
 
@@ -206,7 +214,10 @@ function AdminCategoriesPage() {
             {pick("إدارة تصنيفات وأقسام المتجر", "Manage Store Categories")}
           </h2>
           <p className="text-xs text-muted-foreground mt-1">
-            {pick("إضافة وتعديل وحذف تصنيفات المنتجات وصورها الرئيسية في المتجر.", "Add, edit, and delete product categories and banner images.")}
+            {pick(
+              "إضافة وتعديل وحذف تصنيفات المنتجات وصورها الرئيسية في المتجر.",
+              "Add, edit, and delete product categories and banner images.",
+            )}
           </p>
         </div>
 
@@ -234,7 +245,7 @@ function AdminCategoriesPage() {
               <div className="flex items-center gap-3">
                 <div className="size-16 rounded-xl overflow-hidden bg-background border border-border shrink-0">
                   <img
-                    src={c.image_url || "/hashem-logo.jpg"}
+                    src={c.image_url || "/hashem-logo.png"}
                     alt={pick(c.name_ar, c.name_en)}
                     className="size-full object-cover"
                   />
@@ -243,7 +254,9 @@ function AdminCategoriesPage() {
                   <h3 className="font-display font-bold text-sm text-foreground truncate">
                     {pick(c.name_ar, c.name_en)}
                   </h3>
-                  <p className="text-[11px] text-muted-foreground truncate">{c.name_en || c.name_ar}</p>
+                  <p className="text-[11px] text-muted-foreground truncate">
+                    {c.name_en || c.name_ar}
+                  </p>
                   <span className="inline-block mt-1 font-mono text-[10px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded-md">
                     slug: {c.slug}
                   </span>
@@ -262,7 +275,14 @@ function AdminCategoriesPage() {
                 <button
                   type="button"
                   onClick={() => {
-                    if (confirm(pick("هل أنت متأكد من حذف هذا التصنيف؟", "Are you sure you want to delete this category?"))) {
+                    if (
+                      confirm(
+                        pick(
+                          "هل أنت متأكد من حذف هذا التصنيف؟",
+                          "Are you sure you want to delete this category?",
+                        ),
+                      )
+                    ) {
                       deleteMutation.mutate(c.id);
                     }
                   }}
@@ -277,7 +297,9 @@ function AdminCategoriesPage() {
         </div>
       ) : (
         <div className="glass rounded-2xl p-12 text-center max-w-md mx-auto">
-          <p className="text-sm text-muted-foreground mb-4">{pick("لا توجد تصنيفات مضافة بعد.", "No categories added yet.")}</p>
+          <p className="text-sm text-muted-foreground mb-4">
+            {pick("لا توجد تصنيفات مضافة بعد.", "No categories added yet.")}
+          </p>
           <button
             type="button"
             onClick={openAdd}
@@ -304,7 +326,11 @@ function AdminCategoriesPage() {
                   className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-500 bg-amber-500/10 border border-amber-500/30 px-2.5 py-1 rounded-lg hover:bg-amber-500/20 transition-all cursor-pointer disabled:opacity-50"
                   title="ترجمة تلقائية للغات الأخرى"
                 >
-                  {translating ? <Loader2 className="size-3 animate-spin" /> : <Sparkles className="size-3" />}
+                  {translating ? (
+                    <Loader2 className="size-3 animate-spin" />
+                  ) : (
+                    <Sparkles className="size-3" />
+                  )}
                   <span>{translating ? t("auto_translating") : t("auto_translate_btn")}</span>
                 </button>
                 <button
@@ -364,9 +390,7 @@ function AdminCategoriesPage() {
               </div>
 
               <div>
-                <label className="font-medium text-muted-foreground block mb-1">
-                  صورة التصنيف
-                </label>
+                <label className="font-medium text-muted-foreground block mb-1">صورة التصنيف</label>
 
                 {form.image_url ? (
                   <div className="space-y-2 mb-2">
@@ -394,7 +418,11 @@ function AdminCategoriesPage() {
                 ) : null}
 
                 <label className="inline-flex items-center gap-2 rounded-xl border border-primary/40 bg-primary/10 px-4 py-2.5 text-xs font-semibold text-primary hover:bg-primary hover:text-primary-foreground cursor-pointer transition-all">
-                  {uploadingImage ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
+                  {uploadingImage ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <Upload className="size-4" />
+                  )}
                   <span>{uploadingImage ? "جاري الرفع..." : "رفع صورة للقسم من جهازك"}</span>
                   <input
                     type="file"
@@ -422,7 +450,11 @@ function AdminCategoriesPage() {
                   disabled={saveMutation.isPending}
                   className="rounded-xl bg-gold-gradient px-7 py-2.5 text-xs font-bold text-primary-foreground shadow-gold-glow cursor-pointer disabled:opacity-50"
                 >
-                  {saveMutation.isPending ? <Loader2 className="size-4 animate-spin inline" /> : t("save")}
+                  {saveMutation.isPending ? (
+                    <Loader2 className="size-4 animate-spin inline" />
+                  ) : (
+                    t("save")
+                  )}
                 </button>
               </div>
             </div>

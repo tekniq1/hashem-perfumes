@@ -97,7 +97,9 @@ function AdminOrders() {
                 <td className="px-4 py-3 text-xs text-muted-foreground">
                   {new Date(o.created_at).toLocaleDateString(lang === "ar" ? "ar-OM" : "en-GB")}
                 </td>
-                <td className="px-4 py-3 font-semibold text-primary">{money(Number(o.total_amount))}</td>
+                <td className="px-4 py-3 font-semibold text-primary">
+                  {money(Number(o.total_amount))}
+                </td>
                 <td className="px-4 py-3 text-foreground">{money(Number(o.total_profit))}</td>
                 <td className="px-4 py-3">
                   <select

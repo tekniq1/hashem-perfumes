@@ -37,11 +37,17 @@ function AnnouncementBar() {
     queryFn: fetchStoreSettings,
   });
 
-  if (settings && settings.announcement_bar_active === false && settings.announcement_enabled === false) {
+  if (
+    settings &&
+    settings.announcement_bar_active === false &&
+    settings.announcement_enabled === false
+  ) {
     return null;
   }
 
-  const customText = pick(settings?.announcement_text_ar, settings?.announcement_text_en) || settings?.announcement_bar_text;
+  const customText =
+    pick(settings?.announcement_text_ar, settings?.announcement_text_en) ||
+    settings?.announcement_bar_text;
   const text = customText && customText.trim() ? customText : t("marquee");
 
   return (
@@ -234,7 +240,6 @@ export function Header() {
             className="lg:hidden border-b border-border/80 bg-background/95 backdrop-blur-2xl shadow-2xl overflow-hidden"
           >
             <div className="max-w-7xl mx-auto px-4 py-6 space-y-5 max-h-[calc(100vh-6rem)] overflow-y-auto">
-              
               {/* 👑 ADMIN SECTION (Shown when logged in as Admin) */}
               {isAdmin ? (
                 <div className="rounded-3xl border border-primary/40 bg-gradient-to-b from-primary/15 via-primary/5 to-transparent p-4 shadow-gold-glow space-y-3">
@@ -271,7 +276,7 @@ export function Header() {
                     {pick("تصفح صفحات المتجر للزوار:", "Store Pages:")}
                   </p>
                 ) : null}
-                
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <Link
                     to="/"
@@ -406,7 +411,9 @@ export function Header() {
                     className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-gold-gradient text-primary-foreground shadow-gold-glow text-xs font-bold"
                   >
                     <User className="size-4" />
-                    <span>{t("sign_in")} / {t("sign_up")}</span>
+                    <span>
+                      {t("sign_in")} / {t("sign_up")}
+                    </span>
                   </Link>
                 )}
 

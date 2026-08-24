@@ -120,7 +120,9 @@ function AdminVideos() {
         className="glass space-y-4 rounded-2xl p-5"
       >
         <div className="flex items-center justify-between">
-          <h2 className="text-lg text-foreground font-bold">{pick("إضافة فيديو ترويجي", "Add Promo Video")}</h2>
+          <h2 className="text-lg text-foreground font-bold">
+            {pick("إضافة فيديو ترويجي", "Add Promo Video")}
+          </h2>
           <button
             type="button"
             onClick={autoTranslateTitle}
@@ -128,7 +130,11 @@ function AdminVideos() {
             className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-500 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-lg hover:bg-amber-500/20 transition-all cursor-pointer disabled:opacity-50"
             title="ترجمة تلقائية / Auto-Translate"
           >
-            {translating ? <Loader2 className="size-3 animate-spin" /> : <Sparkles className="size-3" />}
+            {translating ? (
+              <Loader2 className="size-3 animate-spin" />
+            ) : (
+              <Sparkles className="size-3" />
+            )}
             <span>{translating ? t("auto_translating") : t("auto_translate_btn")}</span>
           </button>
         </div>
@@ -154,7 +160,11 @@ function AdminVideos() {
 
         <label className="block space-y-1.5">
           <span className="text-xs text-muted-foreground">{t("video_product")}</span>
-          <select value={productId} onChange={(e) => setProductId(e.target.value)} className={field}>
+          <select
+            value={productId}
+            onChange={(e) => setProductId(e.target.value)}
+            className={field}
+          >
             <option value="">{t("none")}</option>
             {(products.data ?? []).map((p) => (
               <option key={p.id} value={p.id}>
@@ -219,7 +229,9 @@ function AdminVideos() {
               className="aspect-[9/16] w-full bg-secondary object-cover"
             />
             <div className="space-y-2 p-4">
-              <p className="text-sm font-semibold text-foreground">{pick(v.title_ar, v.title_en)}</p>
+              <p className="text-sm font-semibold text-foreground">
+                {pick(v.title_ar, v.title_en)}
+              </p>
               <p className="text-xs text-muted-foreground">
                 {t("video_order")}: {v.display_order}
               </p>
@@ -243,9 +255,7 @@ function AdminVideos() {
           </div>
         ))}
         {videos.data && videos.data.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            {t("no_videos_yet")}
-          </p>
+          <p className="text-sm text-muted-foreground">{t("no_videos_yet")}</p>
         ) : null}
       </div>
     </div>

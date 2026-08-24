@@ -11,7 +11,8 @@ export const Route = createFileRoute("/branches")({
       { title: "فروعنا — هاشم للطيب | Our Branches" },
       {
         name: "description",
-        content: "فروع متجر هاشم للطيب في سلطنة عمان. تفضل بزيارتنا لتجربة أرقى العطور والبخور واللبان الحوجري.",
+        content:
+          "فروع متجر هاشم للطيب في سلطنة عمان. تفضل بزيارتنا لتجربة أرقى العطور والبخور واللبان الحوجري.",
       },
     ],
   }),
@@ -36,9 +37,7 @@ function BranchesPage() {
         <h1 className="font-display text-3xl font-bold text-foreground sm:text-5xl">
           {t("branches_title")}
         </h1>
-        <p className="mt-4 text-sm text-muted-foreground sm:text-base">
-          {t("branches_subtitle")}
-        </p>
+        <p className="mt-4 text-sm text-muted-foreground sm:text-base">{t("branches_subtitle")}</p>
       </div>
 
       {isLoading ? (
@@ -85,7 +84,9 @@ function BranchesPage() {
                   </div>
                   <div className="flex items-center gap-2.5">
                     <Phone className="size-4 shrink-0 text-primary/70" />
-                    <span dir="ltr" className="font-medium text-foreground">{b.phone}</span>
+                    <span dir="ltr" className="font-medium text-foreground">
+                      {b.phone}
+                    </span>
                   </div>
                 </div>
               </div>

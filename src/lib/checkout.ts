@@ -61,9 +61,7 @@ export async function placeOrder(input: CheckoutInput) {
   if (itemsError) console.warn("order_items insert note:", itemsError.message);
 
   await Promise.all(
-    input.lines.map((l) =>
-      supabase.rpc("decrement_stock", { _product_id: l.id, _qty: l.qty }),
-    ),
+    input.lines.map((l) => supabase.rpc("decrement_stock", { _product_id: l.id, _qty: l.qty })),
   );
 
   await supabase.from("notifications").insert({
@@ -104,12 +102,12 @@ export function whatsappUrl(args: {
     year: "numeric",
   });
 
-  const domain = args.siteUrl || (typeof window !== "undefined" ? window.location.origin : "https://hashem-lelteeb.com");
+  const domain =
+    args.siteUrl ||
+    (typeof window !== "undefined" ? window.location.origin : "https://hashem-lelteeb.com");
   const trackingUrl = `${domain}/orders`;
 
-  const itemLines = args.lines
-    .map((l) => `${l.name_ar || l.name_en} x ${l.qty}`)
-    .join("\n");
+  const itemLines = args.lines.map((l) => `${l.name_ar || l.name_en} x ${l.qty}`).join("\n");
 
   const shippingText =
     args.deliveryMethod === "pickup"
@@ -139,7 +137,10 @@ export function whatsappUrl(args: {
     `Payment Method: ${paymentText}`,
     `المجموع: OMR ${args.total.toFixed(3)}`,
     args.transferReference ? `رقم الحوالة: ${args.transferReference}` : "",
-    args.receiptImageUrl ? `صورة إشعار التحويل: ${args.receiptImageUrl}` : "",
+    // ✅ لا نرسل رابط Supabase — نطلب من العميل إرسال الصورة بشكل منفصل
+    args.receiptImageUrl
+      ? `📎 تم حفظ صورة إشعار التحويل — يرجى إرسال صورة الإشعار في رسالة واتساب منفصلة بعد إرسال هذه الرسالة.`
+      : "",
     args.notes ? `\nملاحظات: ${args.notes}` : "",
     "",
     "تتبع طلبك:",

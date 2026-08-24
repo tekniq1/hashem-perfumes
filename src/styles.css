@@ -199,12 +199,7 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      oklch(0.735 0.093 78.5 / 20%),
-      transparent
-    );
+    background: linear-gradient(90deg, transparent, oklch(0.735 0.093 78.5 / 20%), transparent);
     transform: translateX(-100%);
     animation: shimmer-sweep 1.8s infinite;
   }
@@ -253,8 +248,36 @@
   }
 }
 
+@keyframes marquee-rtl {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(50%);
+  }
+}
+
 @utility marquee-track {
   display: flex;
   width: max-content;
   animation: marquee-ltr 26s linear infinite;
+}
+
+@utility marquee-track-slow {
+  display: flex;
+  width: max-content;
+  animation: marquee-ltr 45s linear infinite;
+}
+
+[dir="rtl"] .marquee-track {
+  animation-name: marquee-rtl;
+}
+
+[dir="rtl"] .marquee-track-slow {
+  animation-name: marquee-rtl;
+}
+
+.marquee-track:hover,
+.marquee-track-slow:hover {
+  animation-play-state: paused;
 }

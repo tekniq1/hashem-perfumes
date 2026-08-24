@@ -1,11 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import {
-  Outlet,
-  Link,
-  createRootRouteWithContext,
-  useRouter,
-} from "@tanstack/react-router";
+import { Outlet, Link, createRootRouteWithContext, useRouter } from "@tanstack/react-router";
 import { Toaster } from "sonner";
+import { useEffect } from "react";
 
 import { LanguageProvider } from "@/lib/i18n";
 import { CartProvider } from "@/lib/cart";
@@ -79,6 +75,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  // Clear stale settings cache once so old Supabase logo/hero URLs don't override new assets
+  useEffect(() => {
+    try {
+      localStorage.removeItem("hashem_store_settings_cache");
+      queryClient.invalidateQueries({ queryKey: ["store-settings"] });
+    } catch {
+      // ignore
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

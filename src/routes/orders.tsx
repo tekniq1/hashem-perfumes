@@ -81,9 +81,7 @@ function Orders() {
               className="glass flex flex-wrap items-center gap-4 rounded-xl p-5"
             >
               <div className="min-w-0 flex-1">
-                <p className="font-mono text-xs text-primary">
-                  #{o.id.slice(0, 8).toUpperCase()}
-                </p>
+                <p className="font-mono text-xs text-primary">#{o.id.slice(0, 8).toUpperCase()}</p>
                 <p className="mt-1 line-clamp-1 text-sm text-foreground">{o.delivery_address}</p>
                 <p className="text-xs text-muted-foreground">
                   {new Date(o.created_at).toLocaleString()}

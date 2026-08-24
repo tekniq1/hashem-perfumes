@@ -1,6 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Award, Crown, HeartHandshake, Instagram, Mail, MapPin, MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
+import {
+  Award,
+  Crown,
+  HeartHandshake,
+  Instagram,
+  Mail,
+  MapPin,
+  MessageCircle,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
 import { fetchStoreSettings } from "@/lib/settings";
@@ -12,7 +22,8 @@ export const Route = createFileRoute("/about")({
       { title: "من نحن — هاشم للطيب | About HASHEM LELTEEB" },
       {
         name: "description",
-        content: "تعرف على قصة هاشم للطيب، فخامة العطور المركزة والبخور الملكي واللبان الحوجري الأصيل.",
+        content:
+          "تعرف على قصة هاشم للطيب، فخامة العطور المركزة والبخور الملكي واللبان الحوجري الأصيل.",
       },
     ],
   }),
@@ -29,7 +40,7 @@ function AboutPage() {
   const title = pick(settings?.about_title_ar, settings?.about_title_en) || t("about_title");
   const description =
     pick(settings?.about_description_ar, settings?.about_description_en) || t("hero_sub");
-  const whatsapp = settings?.whatsapp_number || "96877036097";
+  const whatsapp = settings?.whatsapp_number || "96877380145";
   const instagram = settings?.instagram_handle || "hashem_lelteeb";
   const email = settings?.email || "abdualhidry@gmail.com";
 
@@ -40,9 +51,7 @@ function AboutPage() {
         <div className="flex justify-center mb-6">
           <LogoMark size={84} />
         </div>
-        <h1 className="font-display text-3xl font-bold text-foreground sm:text-5xl">
-          {title}
-        </h1>
+        <h1 className="font-display text-3xl font-bold text-foreground sm:text-5xl">{title}</h1>
         <p className="mx-auto mt-6 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base sm:leading-loose">
           {description}
         </p>
@@ -55,7 +64,9 @@ function AboutPage() {
             className="inline-flex items-center gap-2 rounded-xl bg-gold-gradient px-6 py-3 text-xs font-semibold text-primary-foreground shadow-gold-glow hover:opacity-95 transition-opacity"
           >
             <MessageCircle className="size-4" />
-            <span>{t("contact_us")} ({whatsapp})</span>
+            <span>
+              {t("contact_us")} ({whatsapp})
+            </span>
           </a>
           <a
             href={`https://instagram.com/${instagram}`}
@@ -101,9 +112,7 @@ function AboutPage() {
           <span className="inline-flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary border border-primary/20">
             <ShieldCheck className="size-7" />
           </span>
-          <h3 className="font-display text-lg font-bold text-foreground">
-            {t("value_1_title")}
-          </h3>
+          <h3 className="font-display text-lg font-bold text-foreground">{t("value_1_title")}</h3>
           <p className="text-xs leading-relaxed text-muted-foreground">
             {pick(
               "لبان حوجري ظفاري فاخر وبخور تم إعداده بعناية فائقة ليدوم عبيره الفواح في منازلكم ومناسباتكم.",
@@ -122,9 +131,7 @@ function AboutPage() {
           <span className="inline-flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary border border-primary/20">
             <HeartHandshake className="size-7" />
           </span>
-          <h3 className="font-display text-lg font-bold text-foreground">
-            {t("value_3_title")}
-          </h3>
+          <h3 className="font-display text-lg font-bold text-foreground">{t("value_3_title")}</h3>
           <p className="text-xs leading-relaxed text-muted-foreground">
             {pick(
               "متابعة دقيقة لكل طلب وتوصيل سريع ومباشر لكافة مناطق السلطنة ودول الخليج.",
@@ -142,9 +149,7 @@ function AboutPage() {
             {t("bank_details_title")}
           </h2>
         </div>
-        <p className="text-xs text-muted-foreground mb-6">
-          {t("payment_advance_note")}
-        </p>
+        <p className="text-xs text-muted-foreground mb-6">{t("payment_advance_note")}</p>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="rounded-xl border border-border/80 bg-background/60 p-4">
