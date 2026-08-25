@@ -51,8 +51,8 @@ function AnnouncementBar() {
   const text = customText && customText.trim() ? customText : t("marquee");
 
   return (
-    <div className="overflow-hidden bg-teal-deep py-2 border-b border-primary/20">
-      <div className="marquee-track gap-16 px-8 text-[11px] font-medium tracking-[0.2em] text-teal-foreground">
+    <div className="overflow-hidden bg-primary py-2 border-b border-primary-foreground/20">
+      <div className="marquee-track gap-16 px-8 text-[11px] font-medium tracking-[0.2em] text-primary-foreground">
         {[0, 1, 2, 3].map((i) => (
           <span key={i} className="whitespace-nowrap flex items-center gap-4">
             <span>✨</span>
@@ -205,7 +205,7 @@ export function Header() {
                 closeMenu();
                 setOpen(true);
               }}
-              className="flex items-center gap-2 rounded-full bg-teal px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs font-semibold text-teal-foreground shadow-soft cursor-pointer hover:opacity-95 transition-opacity"
+              className="flex items-center gap-2 rounded-full bg-primary px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs font-semibold text-primary-foreground shadow-soft cursor-pointer hover:opacity-95 transition-opacity"
             >
               <ShoppingBag className="size-4" />
               <span className="hidden md:inline">{t("cart")}</span>
