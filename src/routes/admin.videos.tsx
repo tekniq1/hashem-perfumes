@@ -32,7 +32,7 @@ function AdminVideos() {
   const [titleEn, setTitleEn] = useState("");
   const [productId, setProductId] = useState("");
   const [ctaLink, setCtaLink] = useState("");
-  const [order, setOrder] = useState(0);
+  const [order, setOrder] = useState<string | number>("0");
   const [file, setFile] = useState<File | null>(null);
   const [progress, setProgress] = useState<number | null>(null);
   const [translating, setTranslating] = useState(false);
@@ -188,8 +188,9 @@ function AdminVideos() {
           <span className="text-xs text-muted-foreground">{t("video_order")}</span>
           <input
             type="number"
+            step="any"
             value={order}
-            onChange={(e) => setOrder(Number(e.target.value))}
+            onChange={(e) => setOrder(e.target.value)}
             className={field}
           />
         </label>

@@ -19,11 +19,11 @@ type Draft = {
   name_en: string;
   description_ar: string;
   description_en: string;
-  price: number;
-  cost_price: number;
+  price: string;
+  cost_price: string;
   discount_price: string;
-  stock_quantity: number;
-  low_stock_threshold: number;
+  stock_quantity: string;
+  low_stock_threshold: string;
   category_id: string;
   images: string[];
   is_featured: boolean;
@@ -35,11 +35,11 @@ const emptyDraft: Draft = {
   name_en: "",
   description_ar: "",
   description_en: "",
-  price: 0,
-  cost_price: 0,
+  price: "",
+  cost_price: "",
   discount_price: "",
-  stock_quantity: 0,
-  low_stock_threshold: 5,
+  stock_quantity: "",
+  low_stock_threshold: "5",
   category_id: "",
   images: [],
   is_featured: false,
@@ -52,11 +52,11 @@ function toDraft(p: Product): Draft {
     name_en: p.name_en,
     description_ar: p.description_ar ?? "",
     description_en: p.description_en ?? "",
-    price: Number(p.price),
-    cost_price: Number(p.cost_price),
-    discount_price: p.discount_price ? String(p.discount_price) : "",
-    stock_quantity: p.stock_quantity,
-    low_stock_threshold: p.low_stock_threshold,
+    price: p.price != null ? String(p.price) : "",
+    cost_price: p.cost_price != null ? String(p.cost_price) : "",
+    discount_price: p.discount_price != null ? String(p.discount_price) : "",
+    stock_quantity: p.stock_quantity != null ? String(p.stock_quantity) : "",
+    low_stock_threshold: p.low_stock_threshold != null ? String(p.low_stock_threshold) : "5",
     category_id: p.category_id ?? "",
     images: p.images ?? [],
     is_featured: p.is_featured,
@@ -284,9 +284,9 @@ function AdminProducts() {
             <span className={hint}>{t("price")}</span>
             <input
               type="number"
-              step="0.001"
+              step="any"
               value={draft.price}
-              onChange={(e) => set("price", Number(e.target.value))}
+              onChange={(e) => set("price", e.target.value)}
               className={field}
             />
           </label>
@@ -294,9 +294,9 @@ function AdminProducts() {
             <span className={hint}>{t("cost_price")}</span>
             <input
               type="number"
-              step="0.001"
+              step="any"
               value={draft.cost_price}
-              onChange={(e) => set("cost_price", Number(e.target.value))}
+              onChange={(e) => set("cost_price", e.target.value)}
               className={field}
             />
           </label>
@@ -304,7 +304,7 @@ function AdminProducts() {
             <span className={hint}>{t("discount_price")}</span>
             <input
               type="number"
-              step="0.001"
+              step="any"
               value={draft.discount_price}
               onChange={(e) => set("discount_price", e.target.value)}
               className={field}
@@ -314,8 +314,9 @@ function AdminProducts() {
             <span className={hint}>{t("stock")}</span>
             <input
               type="number"
+              step="any"
               value={draft.stock_quantity}
-              onChange={(e) => set("stock_quantity", Number(e.target.value))}
+              onChange={(e) => set("stock_quantity", e.target.value)}
               className={field}
             />
           </label>
@@ -323,8 +324,9 @@ function AdminProducts() {
             <span className={hint}>{t("threshold")}</span>
             <input
               type="number"
+              step="any"
               value={draft.low_stock_threshold}
-              onChange={(e) => set("low_stock_threshold", Number(e.target.value))}
+              onChange={(e) => set("low_stock_threshold", e.target.value)}
               className={field}
             />
           </label>

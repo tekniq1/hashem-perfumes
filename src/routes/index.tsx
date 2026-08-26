@@ -228,7 +228,7 @@ function Home() {
                   loading="lazy"
                   className="h-56 w-full object-cover transition-transform duration-700 group-hover:scale-110 sm:h-72"
                 />
-                <span className="absolute inset-x-4 bottom-4 rounded-2xl border border-primary/25 bg-card/85 p-4 text-center font-display text-sm font-bold text-foreground backdrop-blur-md shadow-sm">
+                <span className="absolute inset-x-4 bottom-4 rounded-2xl border border-primary/40 bg-primary/25 p-4 text-center font-display text-sm font-bold text-primary-foreground backdrop-blur-md shadow-gold-glow">
                   {pick(c.name_ar, c.name_en)}
                 </span>
               </Link>

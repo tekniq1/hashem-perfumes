@@ -473,8 +473,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       t: (k) => dict[k]?.[lang] ?? dict[k]?.ar ?? (k as string),
       money: (v) =>
         lang === "ar"
-          ? `${new Intl.NumberFormat("ar-OM", { minimumFractionDigits: 3, maximumFractionDigits: 3 }).format(v)} ر.ع`
-          : `OMR ${new Intl.NumberFormat("en-OM", { minimumFractionDigits: 3, maximumFractionDigits: 3 }).format(v)}`,
+          ? `${new Intl.NumberFormat("en-OM", { maximumFractionDigits: 3 }).format(v)} ر.ع`
+          : `OMR ${new Intl.NumberFormat("en-OM", { maximumFractionDigits: 3 }).format(v)}`,
       pick: (ar, en) => {
         if (lang === "en") {
           return en && en.trim() ? en : ar || "";
