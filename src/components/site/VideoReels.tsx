@@ -12,7 +12,6 @@ function ReelCard({
   video,
   index,
   isActive,
-  isSectionInView,
   progress,
   onOpen,
   cardRef,
@@ -20,7 +19,6 @@ function ReelCard({
   video: PromoVideo;
   index: number;
   isActive: boolean;
-  isSectionInView: boolean;
   progress: number;
   onOpen: () => void;
   cardRef: (el: HTMLButtonElement | null) => void;
@@ -38,32 +36,29 @@ function ReelCard({
     el.setAttribute("muted", "");
     el.setAttribute("playsinline", "");
     el.setAttribute("webkit-playsinline", "");
+    el.setAttribute("autoplay", "");
+
+    const playVideo = () => {
+      el.muted = true;
+      el.play().catch(() => {});
+    };
+
+    playVideo();
+    el.addEventListener("loadedmetadata", playVideo);
+    el.addEventListener("canplay", playVideo);
+
+    return () => {
+      el.removeEventListener("loadedmetadata", playVideo);
+      el.removeEventListener("canplay", playVideo);
+    };
   }, []);
 
   useEffect(() => {
     const el = videoRef.current;
     if (!el) return;
-
     el.muted = true;
-    el.defaultMuted = true;
-
-    if (isActive && isSectionInView) {
-      const playPromise = el.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          // If browser queued or blocked, retry when video is ready
-          const tryPlay = () => {
-            el.muted = true;
-            el.play().catch(() => {});
-          };
-          el.addEventListener("canplay", tryPlay, { once: true });
-          el.addEventListener("loadeddata", tryPlay, { once: true });
-        });
-      }
-    } else {
-      el.pause();
-    }
-  }, [isActive, isSectionInView]);
+    el.play().catch(() => {});
+  }, [isActive]);
 
   return (
     <motion.button
@@ -77,11 +72,11 @@ function ReelCard({
       className={`group relative w-[15rem] shrink-0 snap-center overflow-hidden rounded-3xl p-0 text-start transition-all duration-500 ${
         isActive
           ? "ring-2 ring-primary/80 shadow-gold-glow scale-[1.02] opacity-100"
-          : "opacity-80 hover:opacity-100 ring-1 ring-border/40"
+          : "opacity-85 hover:opacity-100 ring-1 ring-border/40"
       }`}
     >
       {/* 8-second progress bar for active card */}
-      {isActive && isSectionInView && (
+      {isActive && (
         <div className="absolute inset-x-0 top-0 z-20 h-1.5 overflow-hidden bg-black/40">
           <div
             className="h-full bg-primary transition-all duration-75 ease-linear rounded-full shadow-[0_0_8px_rgba(212,175,55,0.8)]"
@@ -91,7 +86,7 @@ function ReelCard({
       )}
 
       {/* Active playing indicator badge */}
-      {isActive && isSectionInView && (
+      {isActive && (
         <div className="absolute start-3 top-3.5 z-20 flex items-center gap-1.5 rounded-full bg-black/50 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur-md">
           <span className="relative flex size-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>
@@ -424,7 +419,7 @@ export function VideoReels() {
 
   // Smoothly scroll the container to center the active card
   useEffect(() => {
-    if (list.length > 0 && isSectionInView) {
+    if (list.length > 0) {
       const targetCard = cardRefs.current[activeIndex];
       if (targetCard) {
         targetCard.scrollIntoView({
@@ -434,11 +429,11 @@ export function VideoReels() {
         });
       }
     }
-  }, [activeIndex, list.length, isSectionInView]);
+  }, [activeIndex, list.length]);
 
-  // 8-second auto advance timer while section is in viewport
+  // 8-second auto advance timer
   useEffect(() => {
-    if (!isSectionInView || isInteracting || selectedIdx !== null || list.length === 0) {
+    if (isInteracting || selectedIdx !== null || list.length === 0) {
       return;
     }
 
@@ -456,7 +451,7 @@ export function VideoReels() {
     }, intervalMs);
 
     return () => clearInterval(timer);
-  }, [isSectionInView, isInteracting, selectedIdx, list.length]);
+  }, [isInteracting, selectedIdx, list.length]);
 
   // Reset progress whenever active card changes
   useEffect(() => {
@@ -517,7 +512,6 @@ export function VideoReels() {
             video={v}
             index={i}
             isActive={activeIndex === i}
-            isSectionInView={isSectionInView}
             progress={progress}
             cardRef={(el) => {
               cardRefs.current[i] = el;
