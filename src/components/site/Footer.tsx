@@ -108,7 +108,16 @@ export function Footer() {
 
       <div className="mx-auto mt-12 max-w-7xl border-t border-border/50 pt-6 px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground/80">
         <p>{t("footer_note")}</p>
-        <p className="text-[11px]">{t("footer_tagline")}</p>
+        <div className="flex items-center gap-4">
+          <p className="text-[11px]">{t("footer_tagline")}</p>
+          <Link
+            to="/auth"
+            title="لوحة التحكم / تسجيل الدخول"
+            className="flex items-center gap-1 text-[11px] text-muted-foreground/50 hover:text-primary transition-colors py-1 px-2 rounded-md hover:bg-primary/10"
+          >
+            <span>لوحة التحكم</span>
+          </Link>
+        </div>
       </div>
     </footer>
   );
