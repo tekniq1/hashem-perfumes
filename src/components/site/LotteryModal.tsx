@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Ticket, X, Gift, CheckCircle2, Loader2, Phone } from "lucide-react";
+import { Ticket, X, Gift, CheckCircle2, Loader2, Phone, ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";

@@ -21,6 +21,7 @@ import { Route as ShopRouteImport } from './routes/shop'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminBranchesRouteImport } from './routes/admin.branches'
 import { Route as AdminCategoriesRouteImport } from './routes/admin.categories'
+import { Route as AdminLotteryRouteImport } from './routes/admin.lottery'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
@@ -87,6 +88,11 @@ const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
   path: '/categories',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminLotteryRoute = AdminLotteryRouteImport.update({
+  id: '/lottery',
+  path: '/lottery',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminOrdersRoute = AdminOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
@@ -125,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/shop': typeof ShopRoute
   '/admin/branches': typeof AdminBranchesRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/lottery': typeof AdminLotteryRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -143,6 +150,7 @@ export interface FileRoutesByTo {
   '/shop': typeof ShopRoute
   '/admin/branches': typeof AdminBranchesRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/lottery': typeof AdminLotteryRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -163,6 +171,7 @@ export interface FileRoutesById {
   '/shop': typeof ShopRoute
   '/admin/branches': typeof AdminBranchesRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/lottery': typeof AdminLotteryRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -184,6 +193,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/admin/branches'
     | '/admin/categories'
+    | '/admin/lottery'
     | '/admin/orders'
     | '/admin/products'
     | '/admin/settings'
@@ -202,6 +212,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/admin/branches'
     | '/admin/categories'
+    | '/admin/lottery'
     | '/admin/orders'
     | '/admin/products'
     | '/admin/settings'
@@ -221,6 +232,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/admin/branches'
     | '/admin/categories'
+    | '/admin/lottery'
     | '/admin/orders'
     | '/admin/products'
     | '/admin/settings'
@@ -328,6 +340,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCategoriesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/lottery': {
+      id: '/admin/lottery'
+      path: '/lottery'
+      fullPath: '/admin/lottery'
+      preLoaderRoute: typeof AdminLotteryRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/orders': {
       id: '/admin/orders'
       path: '/orders'
@@ -369,6 +388,7 @@ declare module '@tanstack/react-router' {
 interface AdminRouteChildren {
   AdminBranchesRoute: typeof AdminBranchesRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
+  AdminLotteryRoute: typeof AdminLotteryRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
   AdminProductsRoute: typeof AdminProductsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
@@ -379,6 +399,7 @@ interface AdminRouteChildren {
 const AdminRouteChildren: AdminRouteChildren = {
   AdminBranchesRoute: AdminBranchesRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
+  AdminLotteryRoute: AdminLotteryRoute,
   AdminOrdersRoute: AdminOrdersRoute,
   AdminProductsRoute: AdminProductsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
