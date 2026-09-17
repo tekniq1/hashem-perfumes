@@ -20,6 +20,7 @@ import { LogoMark } from "@/components/brand/Logo";
 import { fetchStoreSettings } from "@/lib/settings";
 import { fetchBranches } from "@/lib/branches";
 import { LotterySection } from "@/components/site/LotteryModal";
+import { LotteryWinners } from "@/components/site/LotteryWinners";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -190,6 +191,7 @@ function Home() {
     <div>
       <Hero />
       <LotterySection />
+      <LotteryWinners />
       <ValueBar />
 
       {/* Categories */}
