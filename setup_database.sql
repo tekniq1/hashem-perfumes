@@ -378,3 +378,63 @@ UPDATE public.profiles
 SET role = 'customer'
 WHERE id NOT IN (SELECT id FROM auth.users WHERE email = 'gfyhhgftyj@gmail.com');
 
+
+-- =========================================================================
+-- ???? ????? ???????? (Lottery & Draw System)
+-- =========================================================================
+
+-- 14. ???? ????? ????? lottery_rounds
+CREATE TABLE IF NOT EXISTS public.lottery_rounds (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'completed')),
+  top_winner_id UUID,
+  random_winner_id UUID,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  completed_at TIMESTAMPTZ
+);
+
+GRANT SELECT ON public.lottery_rounds TO anon;
+GRANT SELECT ON public.lottery_rounds TO authenticated;
+GRANT ALL ON public.lottery_rounds TO service_role;
+ALTER TABLE public.lottery_rounds ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "lottery_rounds public read" ON public.lottery_rounds;
+CREATE POLICY "lottery_rounds public read" ON public.lottery_rounds FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "lottery_rounds admin write" ON public.lottery_rounds;
+CREATE POLICY "lottery_rounds admin write" ON public.lottery_rounds FOR ALL TO authenticated USING (public.has_role(auth.uid(),'admin')) WITH CHECK (public.has_role(auth.uid(),'admin'));
+
+-- 15. ???? ???? ????? lottery_tickets
+CREATE TABLE IF NOT EXISTS public.lottery_tickets (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  ticket_code TEXT NOT NULL UNIQUE,
+  customer_name TEXT,
+  customer_phone TEXT,
+  is_used BOOLEAN NOT NULL DEFAULT false,
+  round_id UUID REFERENCES public.lottery_rounds(id) ON DELETE CASCADE,
+  is_winner BOOLEAN NOT NULL DEFAULT false,
+  win_type TEXT, -- 'top', 'random'
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  used_at TIMESTAMPTZ
+);
+
+GRANT SELECT, UPDATE ON public.lottery_tickets TO anon;
+GRANT SELECT, UPDATE ON public.lottery_tickets TO authenticated;
+GRANT ALL ON public.lottery_tickets TO service_role;
+ALTER TABLE public.lottery_tickets ENABLE ROW LEVEL SECURITY;
+
+-- ?????? ?????? ?????? ?????? (??? ???? ????? ?????? ??? ????? ???? ????? ?????? ??????? ???)
+DROP POLICY IF EXISTS "lottery_tickets public read" ON public.lottery_tickets;
+CREATE POLICY "lottery_tickets public read" ON public.lottery_tickets FOR SELECT USING (true);
+
+-- ?????? ?????? ?????? ????? ????? ?? (????????)
+DROP POLICY IF EXISTS "lottery_tickets public update" ON public.lottery_tickets;
+CREATE POLICY "lottery_tickets public update" ON public.lottery_tickets FOR UPDATE USING (true) WITH CHECK (is_used = true);
+
+DROP POLICY IF EXISTS "lottery_tickets admin write" ON public.lottery_tickets;
+CREATE POLICY "lottery_tickets admin write" ON public.lottery_tickets FOR ALL TO authenticated USING (public.has_role(auth.uid(),'admin')) WITH CHECK (public.has_role(auth.uid(),'admin'));
+
+-- ????? ??? ???? ???? ??? ?? ??? ??????
+INSERT INTO public.lottery_rounds (status)
+SELECT 'active'
+WHERE NOT EXISTS (SELECT 1 FROM public.lottery_rounds WHERE status = 'active');

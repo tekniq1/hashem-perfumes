@@ -4,6 +4,7 @@ import {
   Crown,
   Film,
   FolderTree,
+  Gift,
   LayoutDashboard,
   MapPin,
   Receipt,
@@ -124,6 +125,12 @@ function AdminLayout() {
           <span className="inline-flex items-center gap-2">
             <Settings className="size-4" />
             {t("tab_settings")}
+          </span>
+        </Link>
+        <Link to="/admin/lottery" className={tab} activeProps={{ className: active }}>
+          <span className="inline-flex items-center gap-2 text-amber-500">
+            <Gift className="size-4" />
+            السحوبات
           </span>
         </Link>
       </nav>
