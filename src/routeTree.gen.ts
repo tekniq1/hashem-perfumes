@@ -15,6 +15,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BranchesRouteImport } from './routes/branches'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as DrawRouteImport } from './routes/draw'
 import { Route as OffersRouteImport } from './routes/offers'
 import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as ShopRouteImport } from './routes/shop'
@@ -56,6 +57,11 @@ const BranchesRoute = BranchesRouteImport.update({
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DrawRoute = DrawRouteImport.update({
+  id: '/draw',
+  path: '/draw',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OffersRoute = OffersRouteImport.update({
@@ -126,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/branches': typeof BranchesRoute
   '/checkout': typeof CheckoutRoute
+  '/draw': typeof DrawRoute
   '/offers': typeof OffersRoute
   '/orders': typeof OrdersRoute
   '/shop': typeof ShopRoute
@@ -145,6 +152,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/branches': typeof BranchesRoute
   '/checkout': typeof CheckoutRoute
+  '/draw': typeof DrawRoute
   '/offers': typeof OffersRoute
   '/orders': typeof OrdersRoute
   '/shop': typeof ShopRoute
@@ -166,6 +174,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/branches': typeof BranchesRoute
   '/checkout': typeof CheckoutRoute
+  '/draw': typeof DrawRoute
   '/offers': typeof OffersRoute
   '/orders': typeof OrdersRoute
   '/shop': typeof ShopRoute
@@ -188,6 +197,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/branches'
     | '/checkout'
+    | '/draw'
     | '/offers'
     | '/orders'
     | '/shop'
@@ -207,6 +217,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/branches'
     | '/checkout'
+    | '/draw'
     | '/offers'
     | '/orders'
     | '/shop'
@@ -227,6 +238,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/branches'
     | '/checkout'
+    | '/draw'
     | '/offers'
     | '/orders'
     | '/shop'
@@ -248,6 +260,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BranchesRoute: typeof BranchesRoute
   CheckoutRoute: typeof CheckoutRoute
+  DrawRoute: typeof DrawRoute
   OffersRoute: typeof OffersRoute
   OrdersRoute: typeof OrdersRoute
   ShopRoute: typeof ShopRoute
@@ -296,6 +309,13 @@ declare module '@tanstack/react-router' {
       path: '/checkout'
       fullPath: '/checkout'
       preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/draw': {
+      id: '/draw'
+      path: '/draw'
+      fullPath: '/draw'
+      preLoaderRoute: typeof DrawRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/offers': {
@@ -416,6 +436,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BranchesRoute: BranchesRoute,
   CheckoutRoute: CheckoutRoute,
+  DrawRoute: DrawRoute,
   OffersRoute: OffersRoute,
   OrdersRoute: OrdersRoute,
   ShopRoute: ShopRoute,
