@@ -83,13 +83,52 @@ function ProductDetail() {
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4 }}
-            className="glass group overflow-hidden rounded-2xl p-2"
+            className="glass group relative overflow-hidden rounded-3xl p-2 shadow-gold-glow"
           >
-            <img
-              src={images[active]}
-              alt={pick(data.name_ar, data.name_en)}
-              className="aspect-square w-full rounded-xl object-cover transition-transform duration-700 group-hover:scale-105"
-            />
+            <div className="relative rounded-2xl overflow-hidden aspect-square">
+              <img
+                src={images[active]}
+                alt={pick(data.name_ar, data.name_en)}
+                className="size-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              
+              {/* Gradient Overlay for text readability */}
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-black/30 opacity-80" />
+
+              {/* Product Info Overlays in Corners */}
+              <div className="absolute inset-0 p-4 sm:p-6 flex flex-col justify-between pointer-events-none">
+                
+                {/* Top Corners */}
+                <div className="flex justify-between items-start">
+                   <div className="flex flex-col gap-2">
+                     <StockBadge product={data} />
+                     {data.discount_price ? (
+                        <span className="pulse-gold rounded-full bg-gold-gradient px-3 py-1 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-lg w-fit">
+                          {t("sale")}
+                        </span>
+                     ) : null}
+                   </div>
+                   <div className="rounded-full bg-black/40 backdrop-blur-md px-3 py-1 border border-white/10 shadow-lg">
+                      <span className="text-[10px] font-bold text-white/90 tracking-widest uppercase">HASHEM LELTEEB</span>
+                   </div>
+                </div>
+
+                {/* Bottom Corners */}
+                <div className="flex items-end justify-between translate-y-1 group-hover:translate-y-0 transition-transform duration-500">
+                   <div className="max-w-[70%]">
+                     <h2 className="font-display text-2xl sm:text-3xl font-bold text-white shadow-black drop-shadow-md leading-tight">
+                       {pick(data.name_ar, data.name_en)}
+                     </h2>
+                   </div>
+                   <div className="flex flex-col items-end text-end">
+                     {data.discount_price ? (
+                       <span className="text-sm font-medium text-white/70 line-through drop-shadow">{money(Number(data.price))}</span>
+                     ) : null}
+                     <span className="text-xl sm:text-2xl font-bold text-primary drop-shadow-lg">{money(price)}</span>
+                   </div>
+                </div>
+              </div>
+            </div>
           </motion.div>
           {images.length > 1 ? (
             <div className="mt-3 flex gap-3">
