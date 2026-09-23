@@ -5,11 +5,13 @@ import { toast } from "sonner";
 import {
   CreditCard,
   Image as ImageIcon,
+  KeyRound,
   Layout,
   Loader2,
   Megaphone,
   MessageCircle,
   Save,
+  ShieldCheck,
   Sparkles,
   Upload,
 } from "lucide-react";
@@ -18,6 +20,7 @@ import { fetchStoreSettings, updateStoreSettings, type StoreSettings } from "@/l
 import { uploadProductImage } from "@/lib/uploads";
 import { LogoMark } from "@/components/brand/Logo";
 import { translateText } from "@/lib/translator";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin/settings")({
   component: AdminSettingsPage,
@@ -40,6 +43,12 @@ function AdminSettingsPage() {
   const [uploadingHero, setUploadingHero] = useState(false);
   const [translatingAbout, setTranslatingAbout] = useState(false);
   const [translatingAnnouncement, setTranslatingAnnouncement] = useState(false);
+
+  // Account security state
+  const [newEmail, setNewEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [savingSecurity, setSavingSecurity] = useState(false);
 
   useEffect(() => {
     if (settings) {
@@ -638,6 +647,105 @@ function AdminSettingsPage() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* 7. Account Security — Email & Password */}
+      <div className="glass rounded-3xl p-6 sm:p-8 border border-primary/30 space-y-5">
+        <div className="flex items-center gap-2.5 text-primary font-bold text-base">
+          <ShieldCheck className="size-5" />
+          <span>أمان الحساب — تغيير الإيميل أو كلمة السر</span>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          يمكنك تغيير إيميل الدخول لحساب الأدمن أو كلمة السر من هنا مباشرةً.
+        </p>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          {/* Email */}
+          <div className="sm:col-span-2">
+            <label className="text-xs font-medium text-muted-foreground block mb-1.5">
+              الإيميل الجديد (اتركه فارغاً إذا لا تريد تغييره)
+            </label>
+            <input
+              className={field}
+              dir="ltr"
+              type="email"
+              value={newEmail}
+              onChange={(e) => setNewEmail(e.target.value)}
+              placeholder="admin@example.com"
+            />
+          </div>
+
+          {/* New Password */}
+          <div>
+            <label className="text-xs font-medium text-muted-foreground block mb-1.5">
+              كلمة السر الجديدة
+            </label>
+            <input
+              className={field}
+              dir="ltr"
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="كلمة سر قوية..."
+            />
+          </div>
+
+          {/* Confirm Password */}
+          <div>
+            <label className="text-xs font-medium text-muted-foreground block mb-1.5">
+              تأكيد كلمة السر الجديدة
+            </label>
+            <input
+              className={field}
+              dir="ltr"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="أعد كتابة كلمة السر..."
+            />
+          </div>
+        </div>
+
+        <button
+          type="button"
+          disabled={savingSecurity}
+          onClick={async () => {
+            if (!newEmail && !newPassword) {
+              toast.error("أدخل الإيميل الجديد أو كلمة السر الجديدة.");
+              return;
+            }
+            if (newPassword && newPassword !== confirmPassword) {
+              toast.error("كلمتا السر غير متطابقتين!");
+              return;
+            }
+            if (newPassword && newPassword.length < 6) {
+              toast.error("كلمة السر يجب أن تكون 6 أحرف على الأقل.");
+              return;
+            }
+            setSavingSecurity(true);
+            try {
+              const updates: { email?: string; password?: string } = {};
+              if (newEmail.trim()) updates.email = newEmail.trim();
+              if (newPassword) updates.password = newPassword;
+              const { error } = await supabase.auth.updateUser(updates);
+              if (error) throw error;
+              toast.success("✅ تم تحديث بيانات الحساب بنجاح!");
+              setNewEmail("");
+              setNewPassword("");
+              setConfirmPassword("");
+            } catch (err: any) {
+              toast.error(err.message || "حدث خطأ أثناء التحديث.");
+            } finally {
+              setSavingSecurity(false);
+            }
+          }}
+          className="flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-xs font-bold text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50 cursor-pointer"
+        >
+          {savingSecurity
+            ? <Loader2 className="size-4 animate-spin" />
+            : <KeyRound className="size-4" />}
+          حفظ بيانات الحساب
+        </button>
       </div>
 
       {/* Save Button */}
