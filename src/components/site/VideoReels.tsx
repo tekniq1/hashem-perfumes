@@ -26,7 +26,7 @@ function ReelCard({
   const { pick } = useI18n();
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Force DOM-level muted and playsinline properties so mobile & desktop browsers allow autoplay
+  // Force DOM-level properties for the video
   useEffect(() => {
     const el = videoRef.current;
     if (!el) return;
@@ -36,28 +36,18 @@ function ReelCard({
     el.setAttribute("muted", "");
     el.setAttribute("playsinline", "");
     el.setAttribute("webkit-playsinline", "");
-    el.setAttribute("autoplay", "");
-
-    const playVideo = () => {
-      el.muted = true;
-      el.play().catch(() => {});
-    };
-
-    playVideo();
-    el.addEventListener("loadedmetadata", playVideo);
-    el.addEventListener("canplay", playVideo);
-
-    return () => {
-      el.removeEventListener("loadedmetadata", playVideo);
-      el.removeEventListener("canplay", playVideo);
-    };
   }, []);
 
+  // ONLY play if active to save bandwidth
   useEffect(() => {
     const el = videoRef.current;
     if (!el) return;
     el.muted = true;
-    el.play().catch(() => {});
+    if (isActive) {
+      el.play().catch(() => {});
+    } else {
+      el.pause();
+    }
   }, [isActive]);
 
   return (
@@ -101,10 +91,9 @@ function ReelCard({
         src={video.video_url}
         poster={video.thumbnail_url ?? undefined}
         muted
-        autoPlay
         loop
         playsInline
-        preload="auto"
+        preload="none"
         className="aspect-[9/16] w-full object-cover transition-transform duration-700 group-hover:scale-105"
       />
       <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/80 via-foreground/30 to-transparent p-4 text-sm font-semibold text-white drop-shadow">

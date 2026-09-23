@@ -34,7 +34,8 @@ export async function fetchProducts(): Promise<Product[]> {
     const { data, error } = await supabase
       .from("products")
       .select("*")
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .limit(50);
     if (error) {
       console.warn("fetchProducts query returned error:", error.message);
       return [];
@@ -62,7 +63,7 @@ export async function fetchProduct(id: string): Promise<Product | null> {
 
 export async function fetchCategories(): Promise<Category[]> {
   try {
-    const { data, error } = await supabase.from("categories").select("*").order("name_en");
+    const { data, error } = await supabase.from("categories").select("*").order("name_en").limit(20);
     if (error) {
       console.warn("fetchCategories error:", error.message);
       return [];

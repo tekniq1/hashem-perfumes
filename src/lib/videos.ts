@@ -24,6 +24,7 @@ export async function fetchPromoVideos(activeOnly = true): Promise<PromoVideo[]>
       .order("display_order", { ascending: true })
       .order("created_at", { ascending: false });
     if (activeOnly) query = query.eq("is_active", true);
+    query = query.limit(10);
     const { data, error } = await query;
     if (error) {
       console.warn("fetchPromoVideos error:", error.message);
