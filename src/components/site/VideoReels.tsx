@@ -417,19 +417,22 @@ export function VideoReels() {
   const videos = useQuery({ queryKey: ["promo-videos"], queryFn: () => fetchPromoVideos(true) });
   const list = videos.data ?? [];
 
-  // Smoothly scroll the container to center the active card
+  // Smoothly scroll the CONTAINER (horizontal) to center the active card
+  // Only when section is already in view — prevents page jumping on load
   useEffect(() => {
-    if (list.length > 0) {
-      const targetCard = cardRefs.current[activeIndex];
-      if (targetCard) {
-        targetCard.scrollIntoView({
-          behavior: "smooth",
-          block: "nearest",
-          inline: "center",
-        });
-      }
+    if (!isSectionInView || list.length === 0) return;
+    const targetCard = cardRefs.current[activeIndex];
+    const container = containerRef.current;
+    if (targetCard && container) {
+      const cardLeft = targetCard.offsetLeft;
+      const cardWidth = targetCard.offsetWidth;
+      const containerWidth = container.offsetWidth;
+      container.scrollTo({
+        left: cardLeft - containerWidth / 2 + cardWidth / 2,
+        behavior: "smooth",
+      });
     }
-  }, [activeIndex, list.length]);
+  }, [activeIndex, list.length, isSectionInView]);
 
   // 8-second auto advance timer
   useEffect(() => {
