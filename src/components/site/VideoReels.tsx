@@ -417,10 +417,13 @@ export function VideoReels() {
   const videos = useQuery({ queryKey: ["promo-videos"], queryFn: () => fetchPromoVideos(true) });
   const list = videos.data ?? [];
 
-  // Smoothly scroll the CONTAINER (horizontal) to center the active card
-  // Only when section is already in view — prevents page jumping on load
+  // Track if user has manually scrolled to this section at least once
+  const hasScrolledToSection = useRef(false);
+  if (isSectionInView) hasScrolledToSection.current = true;
+
+  // Scroll the horizontal container only — never scrolls the page
   useEffect(() => {
-    if (!isSectionInView || list.length === 0) return;
+    if (!hasScrolledToSection.current || list.length === 0) return;
     const targetCard = cardRefs.current[activeIndex];
     const container = containerRef.current;
     if (targetCard && container) {
@@ -432,7 +435,7 @@ export function VideoReels() {
         behavior: "smooth",
       });
     }
-  }, [activeIndex, list.length, isSectionInView]);
+  }, [activeIndex, list.length]);
 
   // 8-second auto advance timer
   useEffect(() => {
