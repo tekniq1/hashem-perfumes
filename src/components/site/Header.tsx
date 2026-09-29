@@ -98,80 +98,18 @@ export function Header() {
     <header className="sticky top-0 z-40">
       <AnnouncementBar />
       <div className="border-b border-border/70 bg-background/90 backdrop-blur-xl shadow-xs">
-        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
-          {/* Brand Logo */}
-          <Link to="/" onClick={closeMenu} aria-label={t("brand")}>
-            <LogoLockup />
-          </Link>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden items-center gap-7 lg:flex">
-            <Link to="/" className={linkClass} activeProps={{ className: activeClass }}>
-              {t("nav_home")}
-            </Link>
-            <Link to="/shop" className={linkClass} activeProps={{ className: activeClass }}>
-              {t("nav_shop")}
-            </Link>
-            <Link
-              to="/offers"
-              className={`${linkClass} flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-semibold`}
-              activeProps={{ className: activeClass }}
-            >
-              <Flame className="size-4 text-amber-500 animate-pulse" />
-              {t("nav_offers")}
-            </Link>
-            <Link
-              to="/shop"
-              search={{ category: "incense" }}
-              className={linkClass}
-              activeProps={{ className: "" }}
-            >
-              {t("nav_incense")}
-            </Link>
-            <Link
-              to="/shop"
-              search={{ category: "fragrances" }}
-              className={linkClass}
-              activeProps={{ className: "" }}
-            >
-              {t("nav_perfumes")}
-            </Link>
-            <Link
-              to="/branches"
-              className={`${linkClass} flex items-center gap-1`}
-              activeProps={{ className: activeClass }}
-            >
-              <MapPin className="size-3.5 text-primary" />
-              {t("nav_branches")}
-            </Link>
-            <Link to="/about" className={linkClass} activeProps={{ className: activeClass }}>
-              {t("nav_about")}
-            </Link>
-            {user ? (
-              <Link to="/orders" className={linkClass} activeProps={{ className: activeClass }}>
-                {t("nav_orders")}
-              </Link>
-            ) : null}
-            {isAdmin ? (
-              <Link
-                to="/admin"
-                className="flex items-center gap-1.5 rounded-full bg-primary/10 border border-primary/40 px-3 py-1 text-xs font-semibold text-primary shadow-xs transition-all hover:bg-primary hover:text-primary-foreground"
-              >
-                <Crown className="size-3.5 text-primary group-hover:text-primary-foreground" />
-                {t("nav_admin")}
-              </Link>
-            ) : null}
-          </nav>
-
-          {/* Action Buttons & Mobile Hamburger */}
-          <div className="flex items-center gap-2 sm:gap-2.5">
-            {/* Language Switch */}
+        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 relative">
+          
+          {/* Right Side (RTL Start) - Hamburger & User */}
+          <div className="flex items-center justify-start gap-3 sm:gap-4 flex-1">
+            {/* Mobile Hamburger Toggle Button */}
             <button
-              onClick={toggle}
-              aria-label={t("language")}
-              className="rounded-full border border-border px-3 py-1.5 text-xs font-bold tracking-widest text-primary transition-colors hover:bg-accent cursor-pointer"
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="flex size-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 transition-all cursor-pointer"
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
             >
-              {lang === "ar" ? "EN" : "عربي"}
+              {mobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
             </button>
 
             {/* User Profile / Auth Button */}
@@ -197,6 +135,25 @@ export function Header() {
                 <User className="size-4" />
               </Link>
             )}
+          </div>
+
+          {/* Center - Brand Logo */}
+          <div className="flex items-center justify-center flex-shrink-0">
+            <Link to="/" onClick={closeMenu} aria-label={t("brand")}>
+              <LogoLockup />
+            </Link>
+          </div>
+
+          {/* Left Side (RTL End) - Language & Cart */}
+          <div className="flex items-center justify-end gap-3 sm:gap-4 flex-1">
+            {/* Language Switch */}
+            <button
+              onClick={toggle}
+              aria-label={t("language")}
+              className="hidden sm:block rounded-full border border-border px-3 py-1.5 text-xs font-bold tracking-widest text-primary transition-colors hover:bg-accent cursor-pointer"
+            >
+              {lang === "ar" ? "EN" : "عربي"}
+            </button>
 
             {/* Cart Button */}
             <motion.button
@@ -205,28 +162,77 @@ export function Header() {
                 closeMenu();
                 setOpen(true);
               }}
-              className="flex items-center gap-2 rounded-full bg-primary px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs font-semibold text-primary-foreground shadow-soft cursor-pointer hover:opacity-95 transition-opacity"
+              className="flex items-center justify-center size-10 sm:w-auto sm:px-4 sm:py-2.5 rounded-full bg-primary text-primary-foreground shadow-soft cursor-pointer hover:opacity-95 transition-opacity relative"
             >
-              <ShoppingBag className="size-4" />
-              <span className="hidden md:inline">{t("cart")}</span>
+              <ShoppingBag className="size-4 sm:size-4" />
+              <span className="hidden sm:inline ms-2 text-xs font-semibold">{t("cart")}</span>
               {count > 0 ? (
-                <span className="flex size-5 items-center justify-center rounded-full bg-gold-gradient text-[10px] font-bold text-primary-foreground">
+                <span className="absolute -top-1 -end-1 sm:static sm:top-auto sm:end-auto flex size-4 sm:size-5 items-center justify-center rounded-full bg-gold-gradient text-[9px] sm:text-[10px] font-bold text-primary-foreground sm:ms-2">
                   {count}
                 </span>
               ) : null}
             </motion.button>
-
-            {/* Mobile Hamburger Toggle Button */}
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="flex lg:hidden size-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 transition-all cursor-pointer"
-              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-            >
-              {mobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-            </button>
           </div>
         </div>
+
+        {/* Desktop Navigation (Bottom Row) */}
+        <nav className="hidden lg:flex items-center justify-center gap-8 h-12 border-t border-border/40 bg-background/50">
+          <Link to="/" className={linkClass} activeProps={{ className: activeClass }}>
+            {t("nav_home")}
+          </Link>
+          <Link to="/shop" className={linkClass} activeProps={{ className: activeClass }}>
+            {t("nav_shop")}
+          </Link>
+          <Link
+            to="/offers"
+            className={`${linkClass} flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-semibold`}
+            activeProps={{ className: activeClass }}
+          >
+            <Flame className="size-4 text-amber-500 animate-pulse" />
+            {t("nav_offers")}
+          </Link>
+          <Link
+            to="/shop"
+            search={{ category: "incense" }}
+            className={linkClass}
+            activeProps={{ className: "" }}
+          >
+            {t("nav_incense")}
+          </Link>
+          <Link
+            to="/shop"
+            search={{ category: "fragrances" }}
+            className={linkClass}
+            activeProps={{ className: "" }}
+          >
+            {t("nav_perfumes")}
+          </Link>
+          <Link
+            to="/branches"
+            className={`${linkClass} flex items-center gap-1`}
+            activeProps={{ className: activeClass }}
+          >
+            <MapPin className="size-3.5 text-primary" />
+            {t("nav_branches")}
+          </Link>
+          <Link to="/about" className={linkClass} activeProps={{ className: activeClass }}>
+            {t("nav_about")}
+          </Link>
+          {user ? (
+            <Link to="/orders" className={linkClass} activeProps={{ className: activeClass }}>
+              {t("nav_orders")}
+            </Link>
+          ) : null}
+          {isAdmin ? (
+            <Link
+              to="/admin"
+              className="flex items-center gap-1.5 rounded-full bg-primary/10 border border-primary/40 px-3 py-1 text-xs font-semibold text-primary shadow-xs transition-all hover:bg-primary hover:text-primary-foreground ms-4"
+            >
+              <Crown className="size-3.5 text-primary group-hover:text-primary-foreground" />
+              {t("nav_admin")}
+            </Link>
+          ) : null}
+        </nav>
       </div>
 
       {/* Mobile Navigation Dropdown Menu */}

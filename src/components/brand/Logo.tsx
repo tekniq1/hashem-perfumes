@@ -29,7 +29,7 @@ export function LogoMark({
 }
 
 export function LogoLockup({
-  size = 44,
+  size = 40,
   stacked = false,
   customUrl,
 }: {
@@ -37,15 +37,39 @@ export function LogoLockup({
   stacked?: boolean | undefined;
   customUrl?: string | undefined;
 }) {
+  if (stacked) {
+    return (
+      <span className="flex flex-col items-center gap-2.5 text-center">
+        <LogoMark size={size} customUrl={customUrl} />
+        <span className="flex flex-col items-center leading-none gap-1">
+          <span className="font-display text-xs tracking-[0.2em] text-foreground font-bold uppercase">
+            HASHEM
+          </span>
+          <span className="font-display text-sm text-foreground font-bold">
+            هاشم للطيب
+          </span>
+        </span>
+      </span>
+    );
+  }
+
+  // Horizontal layout matching the requested design (English - Icon - Arabic)
   return (
-    <span className={`flex items-center gap-3 ${stacked ? "flex-col text-center" : ""}`}>
-      <LogoMark size={size} customUrl={customUrl} />
-      <span className="flex flex-col leading-none">
-        <span className="font-display text-sm tracking-[0.22em] text-gold-gradient sm:text-base font-bold">
+    <span className="flex items-center gap-2.5 sm:gap-3.5">
+      {/* English Text (Left side / RTL end) */}
+      <span className="hidden sm:flex flex-col leading-none mt-1">
+        <span className="font-display text-[10px] tracking-[0.25em] text-foreground sm:text-xs font-bold uppercase">
           HASHEM
         </span>
-        <span className="mt-0.5 text-[10px] tracking-[0.28em] text-muted-foreground font-medium">
-          FOR PERFUMES
+      </span>
+
+      {/* Center Icon */}
+      <LogoMark size={size} customUrl={customUrl} />
+
+      {/* Arabic Text (Right side / RTL start) */}
+      <span className="flex flex-col leading-none mt-1">
+        <span className="font-display text-sm text-foreground sm:text-base font-bold">
+          هاشم للطيب
         </span>
       </span>
     </span>
