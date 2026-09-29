@@ -57,7 +57,7 @@ export function LogoLockup({
   return (
     <span className="flex items-center gap-2.5 sm:gap-3.5">
       {/* English Text (Left side / RTL end) */}
-      <span className="hidden sm:flex flex-col leading-none mt-1">
+      <span className="flex flex-col leading-none mt-1">
         <span className="font-display text-[10px] tracking-[0.25em] text-foreground sm:text-xs font-bold uppercase">
           HASHEM
         </span>
