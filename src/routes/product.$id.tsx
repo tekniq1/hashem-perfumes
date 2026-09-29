@@ -9,6 +9,7 @@ import { useCart } from "@/lib/cart";
 import { effectivePrice, fetchProduct } from "@/lib/products";
 import { StockBadge } from "@/components/site/StockBadge";
 import { BlockSkeleton } from "@/components/site/Skeletons";
+import { ReviewsSection } from "@/components/site/ReviewsSection";
 
 export const Route = createFileRoute("/product/$id")({
   head: () => ({
@@ -195,6 +196,11 @@ function ProductDetail() {
             {soldOut ? t("out_of_stock") : t("add_to_cart")}
           </motion.button>
         </motion.div>
+      </div>
+      
+      {/* Product Reviews */}
+      <div className="mt-12 sm:mt-16">
+        <ReviewsSection productId={data.id} />
       </div>
     </div>
   );

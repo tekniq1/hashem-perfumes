@@ -91,6 +91,7 @@ export function Header() {
     { to: "/admin/categories", label: t("tab_categories"), icon: FolderTree },
     { to: "/admin/branches", label: t("tab_branches"), icon: MapPin },
     { to: "/admin/videos", label: t("tab_videos"), icon: Film },
+    { to: "/admin/reviews", label: pick("التقييمات", "Reviews"), icon: MessageCircle },
     { to: "/admin/settings", label: t("tab_settings"), icon: Settings },
   ];
 

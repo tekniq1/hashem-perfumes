@@ -21,6 +21,7 @@ import { fetchStoreSettings } from "@/lib/settings";
 import { fetchBranches } from "@/lib/branches";
 import { LotterySection } from "@/components/site/LotteryModal";
 import { LotteryWinners } from "@/components/site/LotteryWinners";
+import { ReviewsSection } from "@/components/site/ReviewsSection";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -349,7 +350,9 @@ function Home() {
             </Link>
           </div>
         </div>
-      </section>
+      {/* Customer Reviews Section */}
+      <ReviewsSection />
+
     </div>
   );
 }

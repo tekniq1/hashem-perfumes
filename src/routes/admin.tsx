@@ -7,6 +7,7 @@ import {
   Gift,
   LayoutDashboard,
   MapPin,
+  MessageSquare,
   Receipt,
   Settings,
 } from "lucide-react";
@@ -119,6 +120,12 @@ function AdminLayout() {
           <span className="inline-flex items-center gap-2">
             <Film className="size-4" />
             {t("tab_videos")}
+          </span>
+        </Link>
+        <Link to="/admin/reviews" className={tab} activeProps={{ className: active }}>
+          <span className="inline-flex items-center gap-2">
+            <MessageSquare className="size-4" />
+            {pick("التقييمات", "Reviews")}
           </span>
         </Link>
         <Link to="/admin/settings" className={tab} activeProps={{ className: active }}>
