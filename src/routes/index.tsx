@@ -350,6 +350,8 @@ function Home() {
             </Link>
           </div>
         </div>
+      </section>
+
       {/* Customer Reviews Section */}
       <ReviewsSection />
 
