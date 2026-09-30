@@ -92,13 +92,18 @@ function Hero() {
             transition={{ duration: 0.6, delay: 0.34 }}
             className="mt-8 flex flex-wrap items-center gap-3.5"
           >
-            <Link
-              to="/shop"
-              className="group inline-flex items-center gap-2 rounded-full bg-gold-gradient px-8 py-3.5 text-sm font-bold text-primary-foreground shadow-gold-glow hover:opacity-90 transition-all"
+            <motion.div
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             >
-              {t("cta_explore")}
-              <ArrowRight className="size-4 transition-transform group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
-            </Link>
+              <Link
+                to="/shop"
+                className="group inline-flex items-center gap-2 rounded-full bg-gold-gradient px-8 py-3.5 text-sm font-bold text-primary-foreground shadow-gold-glow hover:opacity-90 transition-all"
+              >
+                {t("cta_explore")}
+                <ArrowRight className="size-4 transition-transform group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
+              </Link>
+            </motion.div>
 
             <a
               href={`https://wa.me/${whatsapp}`}
