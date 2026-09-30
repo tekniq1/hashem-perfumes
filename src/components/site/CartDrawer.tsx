@@ -41,6 +41,47 @@ export function CartDrawer() {
               </button>
             </div>
 
+            {/* Voucher Progress / Reward Banner */}
+            {lines.length > 0 && (
+              <div className="bg-primary/5 px-5 py-3 border-b border-primary/10">
+                {subtotal >= 99 ? (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="flex items-center gap-3"
+                  >
+                    <div className="flex size-11 shrink-0 flex-col items-center justify-center rounded-xl bg-gold-gradient text-primary-foreground shadow-gold-glow">
+                      <span className="text-[9px] font-bold uppercase leading-none opacity-80">Gift</span>
+                      <span className="text-sm font-bold leading-none">5</span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                        {pick("مبروك! ربحت قسيمة شرائية 🎉", "Congrats! You won a gift voucher 🎉")}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">
+                        {pick("سيتم إرسال كود الخصم بعد إتمام الطلب", "Voucher code will be sent after checkout")}
+                      </p>
+                    </div>
+                  </motion.div>
+                ) : (
+                  <div className="space-y-2">
+                    <p className="text-xs font-semibold text-center text-foreground">
+                      {pick(
+                        `أضف منتجات بقيمة ${money(99 - subtotal)} لتربح قسيمة بقيمة 5 ريال!`,
+                        `Add ${money(99 - subtotal)} more to win a 5 SAR gift voucher!`
+                      )}
+                    </p>
+                    <div className="h-1.5 w-full bg-primary/10 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-gold-gradient transition-all duration-500 ease-out" 
+                        style={{ width: `${Math.min((subtotal / 99) * 100, 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="flex-1 space-y-3 overflow-y-auto p-4">
               {lines.length === 0 ? (
                 <p className="mt-16 text-center text-sm text-muted-foreground">{t("cart_empty")}</p>
