@@ -1,5 +1,5 @@
 export function LogoMark({
-  size = 48,
+  size = 60,
   customUrl,
   useVideo = true,
 }: {
@@ -11,7 +11,7 @@ export function LogoMark({
 
   return (
     <span
-      className="relative inline-flex items-center justify-center shrink-0 overflow-hidden rounded-full border-2 border-primary/40 bg-card shadow-gold-glow backdrop-blur-sm transition-transform duration-300 hover:scale-105"
+      className="relative inline-flex items-center justify-center shrink-0 overflow-hidden rounded-full border-2 border-primary/50 bg-card shadow-gold-glow-lg backdrop-blur-md transition-transform duration-300 hover:scale-105"
       style={{ width: size, height: size }}
       aria-hidden="true"
     >
@@ -41,7 +41,7 @@ export function LogoMark({
 }
 
 export function LogoLockup({
-  size = 48,
+  size = 60,
   stacked = false,
   customUrl,
   useVideo = true,
@@ -53,13 +53,13 @@ export function LogoLockup({
 }) {
   if (stacked) {
     return (
-      <span className="flex flex-col items-center gap-3 text-center">
+      <span className="flex flex-col items-center gap-3.5 text-center">
         <LogoMark size={size} customUrl={customUrl} useVideo={useVideo} />
-        <span className="flex flex-col items-center leading-none gap-1.5">
-          <span className="font-display text-sm tracking-[0.25em] text-foreground font-extrabold uppercase sm:text-base">
+        <span className="flex flex-col items-center leading-none gap-2">
+          <span className="font-display text-sm sm:text-base tracking-[0.28em] text-foreground font-extrabold uppercase">
             HASHEM
           </span>
-          <span className="font-display text-base font-extrabold text-foreground sm:text-lg">
+          <span className="font-display text-lg sm:text-2xl font-extrabold text-foreground">
             هاشم للطيب
           </span>
         </span>
@@ -69,10 +69,10 @@ export function LogoLockup({
 
   // Horizontal layout matching the luxury Reef design (English [Left] - Animated 3D Logo [Center] - Arabic [Right])
   return (
-    <span dir="ltr" className="flex items-center gap-3 sm:gap-4 select-none">
+    <span dir="ltr" className="flex items-center gap-3.5 sm:gap-5 select-none">
       {/* English Text (Left side) */}
       <span className="flex flex-col leading-none">
-        <span className="font-display text-xs sm:text-sm tracking-[0.26em] text-foreground font-extrabold uppercase transition-colors">
+        <span className="font-display text-xs sm:text-base tracking-[0.28em] text-foreground font-extrabold uppercase transition-colors">
           HASHEM
         </span>
       </span>
@@ -82,7 +82,7 @@ export function LogoLockup({
 
       {/* Arabic Text (Right side) */}
       <span className="flex flex-col leading-none">
-        <span className="font-display text-base sm:text-xl font-extrabold text-foreground tracking-tight transition-colors">
+        <span className="font-display text-lg sm:text-2xl font-extrabold text-foreground tracking-tight transition-colors">
           هاشم للطيب
         </span>
       </span>
