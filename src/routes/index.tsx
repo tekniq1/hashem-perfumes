@@ -42,6 +42,83 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
+function Hero() {
+  const { t } = useI18n();
+  const { data: settings } = useQuery({
+    queryKey: ["store-settings"],
+    queryFn: fetchStoreSettings,
+  });
+
+  const whatsapp = settings?.whatsapp_number || "96877380145";
+
+  return (
+    <section className="relative overflow-hidden px-4 pt-6 pb-2 sm:px-6 sm:pt-10 text-center">
+      <div className="pointer-events-none absolute -top-40 start-1/2 size-[36rem] -translate-x-1/2 rounded-full bg-primary/10 blur-[140px]" />
+
+      <div className="mx-auto max-w-3xl relative z-10 flex flex-col items-center">
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/25 px-4 py-1.5 text-xs font-bold text-primary mb-3"
+        >
+          <Sparkles className="size-3.5" />
+          <span>{t("hero_kicker")}</span>
+        </motion.div>
+
+        <motion.h1
+          initial={{ opacity: 0, y: 22 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 90, damping: 18, delay: 0.1 }}
+          className="font-display text-4xl leading-[1.25] text-foreground sm:text-6xl font-bold"
+        >
+          {t("hero_title_1")} <br />
+          <span className="text-gold-gradient">{t("hero_title_2")}</span>
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.22 }}
+          className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base"
+        >
+          {t("hero_sub")}
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.34 }}
+          className="mt-7 flex flex-wrap items-center justify-center gap-3.5"
+        >
+          <motion.div
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <Link
+              to="/shop"
+              className="group inline-flex items-center gap-2 rounded-full bg-gold-gradient px-8 py-3.5 text-sm font-bold text-primary-foreground shadow-gold-glow hover:opacity-90 transition-all"
+            >
+              {t("cta_explore")}
+              <ArrowRight className="size-4 transition-transform group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
+            </Link>
+          </motion.div>
+
+          <a
+            href={`https://wa.me/${whatsapp}`}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-6 py-3.5 text-sm font-semibold text-primary hover:bg-gold-gradient hover:text-primary-foreground transition-all shadow-sm"
+          >
+            <MessageCircle className="size-4" />
+            <span>{t("direct_whatsapp_order")}</span>
+          </a>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
 function ValueBar() {
   const { t } = useI18n();
   const items = [
@@ -87,7 +164,10 @@ function Home() {
 
   return (
     <div className="space-y-6 sm:space-y-10">
-      {/* 🎬 Modern Top Story & Promo Reels Showcase */}
+      {/* 👑 Welcome Hero Banner with Animated CTAs */}
+      <Hero />
+
+      {/* 🎬 Story & Promo Reels Showcase */}
       <VideoReels />
 
       <ValueBar />
