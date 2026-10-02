@@ -464,10 +464,10 @@ export function VideoReels() {
   if (!list.length) return null;
 
   return (
-    <section ref={sectionRef} className="mx-auto mt-20 max-w-7xl px-4 sm:px-6">
-      <div className="mb-6 flex items-center justify-between">
+    <section ref={sectionRef} className="mx-auto mt-4 sm:mt-6 max-w-7xl px-4 sm:px-6">
+      <div className="mb-4 sm:mb-6 flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-foreground sm:text-3xl">{t("promo_videos")}</h2>
+          <h2 className="text-xl sm:text-2xl font-bold font-display text-foreground">{t("promo_videos")}</h2>
         </div>
 
         {/* Carousel arrows */}

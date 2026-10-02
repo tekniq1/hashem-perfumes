@@ -42,114 +42,6 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-function Hero() {
-  const { t } = useI18n();
-  const { data: settings } = useQuery({
-    queryKey: ["store-settings"],
-    queryFn: fetchStoreSettings,
-  });
-
-  const whatsapp = settings?.whatsapp_number || "96877380145";
-
-  return (
-    <section className="relative overflow-hidden px-4 pb-14 pt-10 sm:px-6 sm:pt-16">
-      <div className="pointer-events-none absolute -top-40 start-1/2 size-[36rem] -translate-x-1/2 rounded-full bg-primary/15 blur-[140px]" />
-
-      <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2">
-        <div className="relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/25 px-4 py-1.5 text-xs font-bold text-primary mb-4"
-          >
-            <Sparkles className="size-3.5" />
-            <span>{t("hero_kicker")}</span>
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 22 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ type: "spring", stiffness: 90, damping: 18, delay: 0.1 }}
-            className="mt-2 font-display text-4xl leading-[1.2] text-foreground sm:text-6xl"
-          >
-            {t("hero_title_1")} <br />
-            <span className="text-gold-gradient">{t("hero_title_2")}</span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.22 }}
-            className="mt-5 max-w-lg text-sm leading-relaxed text-muted-foreground sm:text-base"
-          >
-            {t("hero_sub")}
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.34 }}
-            className="mt-8 flex flex-wrap items-center gap-3.5"
-          >
-            <motion.div
-              animate={{ scale: [1, 1.05, 1] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <Link
-                to="/shop"
-                className="group inline-flex items-center gap-2 rounded-full bg-gold-gradient px-8 py-3.5 text-sm font-bold text-primary-foreground shadow-gold-glow hover:opacity-90 transition-all"
-              >
-                {t("cta_explore")}
-                <ArrowRight className="size-4 transition-transform group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
-              </Link>
-            </motion.div>
-
-            <a
-              href={`https://wa.me/${whatsapp}`}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-6 py-3.5 text-sm font-semibold text-primary hover:bg-gold-gradient hover:text-primary-foreground transition-all shadow-sm"
-            >
-              <MessageCircle className="size-4" />
-              <span>{t("direct_whatsapp_order")}</span>
-            </a>
-          </motion.div>
-        </div>
-
-        {/* Brand Pedestal Column */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.94 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ type: "spring", stiffness: 80, damping: 18, delay: 0.15 }}
-          className="relative mx-auto flex aspect-square w-full max-w-lg items-center justify-center"
-        >
-          <div className="absolute inset-6 rounded-full border border-primary/40 shadow-gold-glow" />
-          <div className="absolute inset-14 rounded-full bg-gold-gradient opacity-15 blur-2xl" />
-          <div className="glass float-slow relative z-10 flex size-3/4 items-center justify-center overflow-hidden rounded-full border border-primary/30">
-            <video 
-              src="/hero-video.mp4" 
-              autoPlay 
-              loop 
-              muted 
-              playsInline 
-              className="size-full object-cover scale-110" 
-            />
-          </div>
-          <div className="absolute bottom-2 z-20 h-10 w-2/3 rounded-[100%] bg-foreground/10 blur-xl" />
-          <motion.div
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 5, repeat: Infinity }}
-            className="absolute -bottom-2 end-6 z-20 rounded-2xl bg-card/95 p-3 shadow-gold-glow backdrop-blur border border-primary/20"
-          >
-            <LogoMark size={48} />
-          </motion.div>
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
 function ValueBar() {
   const { t } = useI18n();
   const items = [
@@ -158,7 +50,7 @@ function ValueBar() {
     { icon: Headphones, title: t("value_3_title"), body: t("value_3_body") },
   ];
   return (
-    <section className="mx-auto mt-4 grid max-w-7xl gap-4 px-4 sm:grid-cols-3 sm:px-6">
+    <section className="mx-auto mt-6 grid max-w-7xl gap-4 px-4 sm:grid-cols-3 sm:px-6">
       {items.map((it, i) => (
         <motion.div
           key={it.title}
@@ -194,14 +86,16 @@ function Home() {
   );
 
   return (
-    <div>
-      <Hero />
+    <div className="space-y-6 sm:space-y-10">
+      {/* 🎬 Modern Top Story & Promo Reels Showcase */}
+      <VideoReels />
+
+      <ValueBar />
       <LotterySection />
       <LotteryWinners />
-      <ValueBar />
 
       {/* Categories */}
-      <section className="mx-auto mt-20 max-w-7xl px-4 sm:px-6">
+      <section className="mx-auto mt-12 max-w-7xl px-4 sm:px-6">
         <div className="flex items-center justify-between mb-8">
           <div>
             <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl">
@@ -246,9 +140,6 @@ function Home() {
           ))}
         </div>
       </section>
-
-      {/* Promotional Video Reels */}
-      <VideoReels />
 
       {/* Exclusive Offers Section (if any) */}
       {discounted.length > 0 ? (
