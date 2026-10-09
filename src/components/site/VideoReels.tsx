@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight, ShoppingBag, Volume2, VolumeX, X } from "luc
 import { useI18n } from "@/lib/i18n";
 import { fetchPromoVideos, type PromoVideo } from "@/lib/videos";
 
-const STORY_DURATION_MS = 8000;
+const STORY_DURATION_MS = 5000;
 
 function ReelCard({
   video,

@@ -171,38 +171,56 @@ export function LotterySection() {
   const isExpired = hasDrawDate && new Date(activeRound!.draw_date!) < new Date();
 
   return (
-    <>
-      {/* Floating Side Button */}
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.8, x: 20 }}
-        animate={{ opacity: 1, scale: 1, x: 0 }}
-        transition={{ delay: 1.2, type: "spring", stiffness: 200 }}
-        className="fixed bottom-24 end-6 z-40"
-        id="lottery"
-      >
-        <button
-          onClick={() => setIsOpen(true)}
-          className="group relative flex items-center gap-3 overflow-hidden rounded-full bg-card px-5 py-3.5 shadow-xl border border-primary/20 hover:border-primary/50 transition-all hover:-translate-y-1 hover:shadow-2xl"
+      {/* Official In-Page Luxury Lottery Banner */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6" id="lottery">
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="relative overflow-hidden rounded-3xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-primary/10 to-amber-500/5 p-4 sm:p-6 shadow-gold-glow backdrop-blur-md"
         >
-          <div className="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors" />
-          {/* Animated ring */}
-          <span className="absolute inset-0 rounded-full border border-primary/20 animate-ping opacity-30" />
-          <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary border border-primary/20">
-            <Gift className="size-4 group-hover:scale-110 transition-transform" />
+          {/* Subtle background glow */}
+          <div className="pointer-events-none absolute -end-10 -top-10 size-40 rounded-full bg-amber-500/15 blur-2xl" />
+
+          <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-gold-gradient text-primary-foreground shadow-gold-glow">
+                <Gift className="size-6 animate-pulse" />
+              </div>
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h3 className="font-display text-base sm:text-lg font-bold text-foreground">
+                    سحوبات وجوائز هاشم للطيب 🎁
+                  </h3>
+                  <span className="rounded-full bg-amber-500/20 px-2.5 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                    فرصة ذهبية
+                  </span>
+                </div>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  مع كل طلب أو كود سحب تحصل على فرصة للفوز بجوائز ملكية قيمة
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 sm:gap-4 self-start sm:self-auto">
+              {hasDrawDate && !isExpired && (
+                <div className="hidden md:block">
+                  <LotteryCountdown drawDate={activeRound!.draw_date} compact />
+                </div>
+              )}
+              <button
+                onClick={() => setIsOpen(true)}
+                className="group inline-flex items-center gap-2 rounded-2xl bg-gold-gradient px-5 sm:px-6 py-3 text-xs sm:text-sm font-bold text-primary-foreground shadow-gold-glow hover:opacity-90 transition-all cursor-pointer"
+              >
+                <Ticket className="size-4" />
+                <span>سجّل بطاقتك الآن</span>
+                <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
+              </button>
+            </div>
           </div>
-          <div className="relative text-start">
-            <span className="block font-bold text-foreground text-sm leading-tight">
-              أدخل السحب الآن!
-            </span>
-            {hasDrawDate && !isExpired && (
-              <LotteryCountdown drawDate={activeRound!.draw_date} compact />
-            )}
-            {!hasDrawDate && (
-              <span className="block text-[11px] text-muted-foreground">اضغط لتسجيل بطاقتك 🎁</span>
-            )}
-          </div>
-        </button>
-      </motion.div>
+        </motion.div>
+      </section>
 
       {/* Modal */}
       <AnimatePresence>
