@@ -12,7 +12,7 @@ import {
   Truck,
 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
-import { fetchCategories, fetchProducts } from "@/lib/products";
+import { fetchProducts } from "@/lib/products";
 import { ProductCard } from "@/components/site/ProductCard";
 import { ProductGridSkeleton } from "@/components/site/Skeletons";
 import { VideoReels } from "@/components/site/VideoReels";
@@ -153,7 +153,6 @@ function ValueBar() {
 function Home() {
   const { t, pick } = useI18n();
   const products = useQuery({ queryKey: ["products"], queryFn: fetchProducts });
-  const categories = useQuery({ queryKey: ["categories"], queryFn: fetchCategories });
   const branches = useQuery({ queryKey: ["branches"], queryFn: () => fetchBranches(true) });
 
   const allProducts = products.data ?? [];
@@ -173,53 +172,6 @@ function Home() {
       <ValueBar />
       <LotterySection />
       <LotteryWinners />
-
-      {/* Categories */}
-      <section className="mx-auto mt-12 max-w-7xl px-4 sm:px-6">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl">
-              {t("shop_by_category")}
-            </h2>
-            <p className="text-xs text-muted-foreground mt-1">{t("browse_luxury_fragrances")}</p>
-          </div>
-          <Link
-            to="/shop"
-            className="text-xs font-semibold text-primary hover:underline flex items-center gap-1"
-          >
-            <span>{t("view_all")}</span>
-            <span>➔</span>
-          </Link>
-        </div>
-
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {(categories.data ?? []).map((c, i) => (
-            <motion.div
-              key={c.id}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ type: "spring", stiffness: 110, damping: 18, delay: i * 0.08 }}
-            >
-              <Link
-                to="/shop"
-                search={{ category: c.slug }}
-                className="glass group relative block overflow-hidden rounded-3xl border border-border/80 shadow-xs hover:border-primary/50 transition-all"
-              >
-                <img
-                  src={c.image_url ?? "/hashem-logo.png"}
-                  alt={pick(c.name_ar, c.name_en)}
-                  loading="lazy"
-                  className="h-56 w-full object-cover transition-transform duration-700 group-hover:scale-110 sm:h-72"
-                />
-                <span className="absolute inset-x-4 bottom-4 rounded-2xl border border-primary/40 bg-primary/25 p-4 text-center font-display text-sm font-bold text-primary-foreground backdrop-blur-md shadow-gold-glow">
-                  {pick(c.name_ar, c.name_en)}
-                </span>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-      </section>
 
       {/* Exclusive Offers Section (if any) */}
       {discounted.length > 0 ? (
