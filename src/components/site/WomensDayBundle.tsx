@@ -12,6 +12,7 @@ import {
   Heart,
   ChevronRight,
   Info,
+  Package,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProducts, type Product, effectivePrice } from "@/lib/products";
@@ -21,8 +22,15 @@ import { toast } from "sonner";
 
 // Fixed bundle settings
 const BUNDLE_TARGET_COUNT = 4;
-const BUNDLE_BASE_PRICE = 50; // 50 OMR for 4 perfumes
+const BUNDLE_BASE_PRICE = 50; // 50 OMR for 4 perfume slots
 const BUNDLE_ITEM_ID = "bundle-womens-day-4";
+
+// Product ID that counts as 2 units (Box: Perfume + Incense)
+const TWO_SLOT_PRODUCT_IDS = new Set(["d092f2e0-18c9-43b2-82c1-cf95364273b9"]);
+
+const getProductSlotWeight = (productId: string) => {
+  return TWO_SLOT_PRODUCT_IDS.has(productId) ? 2 : 1;
+};
 
 export function WomensDayBundleSection() {
   const { money, pick } = useI18n();
@@ -35,36 +43,55 @@ export function WomensDayBundleSection() {
     queryFn: fetchProducts,
   });
 
-  // Calculate selected total items
-  const selectedTotalCount = useMemo(() => {
-    return Object.values(selectedMap).reduce((sum, qty) => sum + qty, 0);
+  // Calculate total slots used (regular item = 1 slot, 2-in-1 box = 2 slots)
+  const selectedTotalSlots = useMemo(() => {
+    return Object.entries(selectedMap).reduce((sum, [id, qty]) => {
+      return sum + qty * getProductSlotWeight(id);
+    }, 0);
   }, [selectedMap]);
 
-  // Selected products with their quantities
+  // Selected products with their quantities and slot weights
   const selectedItems = useMemo(() => {
     return Object.entries(selectedMap)
       .map(([id, qty]) => {
         const product = products.find((p) => p.id === id);
-        return product && qty > 0 ? { product, qty } : null;
+        return product && qty > 0
+          ? { product, qty, slotWeight: getProductSlotWeight(id) }
+          : null;
       })
-      .filter(Boolean) as { product: Product; qty: number }[];
+      .filter(Boolean) as { product: Product; qty: number; slotWeight: number }[];
   }, [selectedMap, products]);
 
   // Pricing calculation
   const pricingDetails = useMemo(() => {
-    if (selectedTotalCount === 0) return { total: 0, bundlePrice: 0, extraPrice: 0, regularTotal: 0, savings: 0 };
+    if (selectedTotalSlots === 0) {
+      return { total: 0, bundlePrice: 0, extraPrice: 0, regularTotal: 0, savings: 0 };
+    }
 
-    const flatItems: { id: string; price: number; name: string }[] = [];
-    selectedItems.forEach(({ product, qty }) => {
-      const p = effectivePrice(product);
+    // Flatten all selected slots
+    // For a 2-slot item (like the perfume + incense box), each slot gets half its effective price
+    const flatSlots: {
+      productId: string;
+      product: Product;
+      slotPrice: number;
+      isSecondSlotOfPair?: boolean;
+    }[] = [];
+
+    selectedItems.forEach(({ product, qty, slotWeight }) => {
+      const fullPrice = effectivePrice(product);
       for (let i = 0; i < qty; i++) {
-        flatItems.push({ id: product.id, price: p, name: pick(product.name_ar, product.name_en) });
+        if (slotWeight === 2) {
+          flatSlots.push({ productId: product.id, product, slotPrice: fullPrice / 2 });
+          flatSlots.push({ productId: product.id, product, slotPrice: fullPrice / 2, isSecondSlotOfPair: true });
+        } else {
+          flatSlots.push({ productId: product.id, product, slotPrice: fullPrice });
+        }
       }
     });
 
-    const regularTotal = flatItems.reduce((acc, it) => acc + it.price, 0);
+    const regularTotal = selectedItems.reduce((acc, it) => acc + effectivePrice(it.product) * it.qty, 0);
 
-    if (selectedTotalCount < BUNDLE_TARGET_COUNT) {
+    if (selectedTotalSlots < BUNDLE_TARGET_COUNT) {
       return {
         total: regularTotal,
         bundlePrice: 0,
@@ -74,12 +101,11 @@ export function WomensDayBundleSection() {
       };
     }
 
-    const sorted = [...flatItems].sort((a, b) => b.price - a.price);
-    const bundleItems = sorted.slice(0, BUNDLE_TARGET_COUNT);
-    const extraItems = sorted.slice(BUNDLE_TARGET_COUNT);
+    // Sort descending by slotPrice so the highest value slots enter the 50 OMR bundle
+    const sorted = [...flatSlots].sort((a, b) => b.slotPrice - a.slotPrice);
+    const extraSlots = sorted.slice(BUNDLE_TARGET_COUNT);
 
-    const bundleOriginalSum = bundleItems.reduce((acc, it) => acc + it.price, 0);
-    const extraPrice = extraItems.reduce((acc, it) => acc + it.price, 0);
+    const extraPrice = extraSlots.reduce((acc, it) => acc + it.slotPrice, 0);
     const total = BUNDLE_BASE_PRICE + extraPrice;
     const savings = Math.max(0, regularTotal - total);
 
@@ -90,7 +116,7 @@ export function WomensDayBundleSection() {
       regularTotal,
       savings,
     };
-  }, [selectedItems, selectedTotalCount, pick]);
+  }, [selectedItems, selectedTotalSlots]);
 
   const handleIncrement = (productId: string, stock: number) => {
     const current = selectedMap[productId] || 0;
@@ -117,11 +143,11 @@ export function WomensDayBundleSection() {
   };
 
   const handleAddBundleToCart = () => {
-    if (selectedTotalCount < BUNDLE_TARGET_COUNT) {
+    if (selectedTotalSlots < BUNDLE_TARGET_COUNT) {
       toast.error(
         pick(
-          `يرجى اختيار ${BUNDLE_TARGET_COUNT - selectedTotalCount} عطور إضافية لاكتمال الباقة!`,
-          `Please select ${BUNDLE_TARGET_COUNT - selectedTotalCount} more perfumes to complete the bundle!`,
+          `يرجى اختيار ما يعادل ${BUNDLE_TARGET_COUNT - selectedTotalSlots} عطور إضافية لاكتمال الباقة!`,
+          `Please select ${BUNDLE_TARGET_COUNT - selectedTotalSlots} more item slots to complete the bundle!`,
         ),
       );
       return;
@@ -129,57 +155,49 @@ export function WomensDayBundleSection() {
 
     const bundleImage = selectedItems[0]?.product.images?.[0] || "/favicon.png";
 
-    const flatItems: { product: Product; price: number }[] = [];
-    selectedItems.forEach(({ product, qty }) => {
-      const p = effectivePrice(product);
+    // Split items between bundle (first 4 slots) and extras
+    const flatSlots: {
+      productId: string;
+      product: Product;
+      slotPrice: number;
+    }[] = [];
+
+    selectedItems.forEach(({ product, qty, slotWeight }) => {
+      const fullPrice = effectivePrice(product);
       for (let i = 0; i < qty; i++) {
-        flatItems.push({ product, price: p });
+        if (slotWeight === 2) {
+          flatSlots.push({ productId: product.id, product, slotPrice: fullPrice / 2 });
+          flatSlots.push({ productId: product.id, product, slotPrice: fullPrice / 2 });
+        } else {
+          flatSlots.push({ productId: product.id, product, slotPrice: fullPrice });
+        }
       }
     });
-    flatItems.sort((a, b) => b.price - a.price);
+    flatSlots.sort((a, b) => b.slotPrice - a.slotPrice);
 
-    const bundleParts = flatItems.slice(0, BUNDLE_TARGET_COUNT);
-    const extraParts = flatItems.slice(BUNDLE_TARGET_COUNT);
+    // Names of items in the bundle
+    const bundleProductNames: string[] = [];
+    selectedItems.forEach(({ product, qty, slotWeight }) => {
+      const name = pick(product.name_ar, product.name_en);
+      const tag = slotWeight === 2 ? ` (بوكس عطر+بخور ×2)` : "";
+      bundleProductNames.push(`${name}${tag} (×${qty})`);
+    });
 
-    const bundleCost = bundleParts.reduce((acc, it) => acc + (it.product.cost_price || 0), 0);
+    const bundleCost = selectedItems.reduce((acc, it) => acc + (it.product.cost_price || 0) * it.qty, 0);
 
     // 1. Add bundle item (50 OMR)
     add(
       {
         id: `${BUNDLE_ITEM_ID}-${Date.now().toString().slice(-5)}`,
-        name_ar: `🌸 باقة يوم المرأة (4 عطور): ${bundleParts.map((p) => p.product.name_ar).join(" + ")}`,
-        name_en: `🌸 Women's Day Bundle (4 Perfumes): ${bundleParts.map((p) => p.product.name_en).join(" + ")}`,
-        price: BUNDLE_BASE_PRICE,
+        name_ar: `🌸 باقة يوم المرأة: ${bundleProductNames.join(" + ")}`,
+        name_en: `🌸 Women's Day Bundle: ${bundleProductNames.join(" + ")}`,
+        price: pricingDetails.total,
         cost_price: bundleCost,
         image: bundleImage,
         stock: 99,
       },
       1,
     );
-
-    // 2. Add extra items if any
-    const extraCountMap: Record<string, { product: Product; count: number }> = {};
-    extraParts.forEach(({ product }) => {
-      if (!extraCountMap[product.id]) {
-        extraCountMap[product.id] = { product, count: 0 };
-      }
-      extraCountMap[product.id].count += 1;
-    });
-
-    Object.values(extraCountMap).forEach(({ product, count }) => {
-      add(
-        {
-          id: product.id,
-          name_ar: product.name_ar,
-          name_en: product.name_en,
-          price: effectivePrice(product),
-          cost_price: product.cost_price,
-          image: product.images?.[0] || null,
-          stock: product.stock_quantity,
-        },
-        count,
-      );
-    });
 
     toast.success(
       pick(
@@ -195,7 +213,7 @@ export function WomensDayBundleSection() {
 
   return (
     <>
-      {/* 👑 Royal Luxury Promotional Banner on Homepage matching Hashem LelTeeb Palette */}
+      {/* 👑 Royal Luxury Promotional Banner on Homepage */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 my-6">
         <motion.div
           initial={{ opacity: 0, y: 15 }}
@@ -227,8 +245,8 @@ export function WomensDayBundleSection() {
 
               <p className="text-xs sm:text-sm text-muted-foreground max-w-xl leading-relaxed mx-auto lg:mx-0">
                 {pick(
-                  "اختاري أي 4 عطور تفضلينها من تشكيلة هاشم للطيب الملكية بسعر موحد 50 ريال عماني فقط. (وفي حال اختيار أكثر من 4 عطور يُحسب الإضافي بقيمته الأصلية).",
-                  "Choose any 4 perfumes of your choice from Hashem LelTeeb luxury collection for just 50 OMR. Extra perfumes beyond 4 are charged at regular price.",
+                  "اختاري أي 4 عطور تفضلينها من تشكيلة هاشم للطيب الملكية بسعر موحد 50 ريال عماني فقط. (بوكس العطر والبخور يُحتسب كقطعتين، وفي حال اختيار أكثر من 4 عطور يُحسب الإضافي بقيمته الأصلية).",
+                  "Choose any 4 perfumes of your choice from Hashem LelTeeb luxury collection for just 50 OMR. (Perfume & Incense box counts as 2 units, extras beyond 4 are charged at regular price).",
                 )}
               </p>
 
@@ -304,8 +322,8 @@ export function WomensDayBundleSection() {
                     </h3>
                     <p className="text-xs text-muted-foreground">
                       {pick(
-                        "اضغطي على (+) لاختيار 4 عطور تفضلينها",
-                        "Click (+) to select 4 perfumes of your choice",
+                        "اختاري ما يعادل 4 عطور (البوكس المزدوج يُحتسب بقطعتين)",
+                        "Select 4 perfume units (Dual box counts as 2 units)",
                       )}
                     </p>
                   </div>
@@ -323,27 +341,27 @@ export function WomensDayBundleSection() {
               <div className="bg-primary/5 px-5 py-3 border-b border-primary/15 space-y-2">
                 <div className="flex items-center justify-between text-xs sm:text-sm font-bold">
                   <span className="flex items-center gap-1.5 text-foreground">
-                    <span>{pick("العطور المختارة:", "Selected Perfumes:")}</span>
+                    <span>{pick("العطور المحتسبة في الباقة:", "Selected Bundle Units:")}</span>
                     <span
                       className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
-                        selectedTotalCount >= BUNDLE_TARGET_COUNT
+                        selectedTotalSlots >= BUNDLE_TARGET_COUNT
                           ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30"
                           : "bg-primary/15 text-primary border border-primary/30"
                       }`}
                     >
-                      {selectedTotalCount} / {BUNDLE_TARGET_COUNT}
+                      {selectedTotalSlots} / {BUNDLE_TARGET_COUNT}
                     </span>
                   </span>
 
                   <span className="font-bold">
-                    {selectedTotalCount >= BUNDLE_TARGET_COUNT ? (
+                    {selectedTotalSlots >= BUNDLE_TARGET_COUNT ? (
                       <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
                         <Check className="size-4" />
                         <span>{pick("اكتملت باقتكِ الفاخرة!", "Bundle Complete!")}</span>
                       </span>
                     ) : (
                       <span className="text-primary font-semibold">
-                        {pick(`متبقي ${BUNDLE_TARGET_COUNT - selectedTotalCount} عطور`, `${BUNDLE_TARGET_COUNT - selectedTotalCount} more needed`)}
+                        {pick(`متبقي ما يعادل ${BUNDLE_TARGET_COUNT - selectedTotalSlots} عطور`, `${BUNDLE_TARGET_COUNT - selectedTotalSlots} more needed`)}
                       </span>
                     )}
                   </span>
@@ -354,18 +372,18 @@ export function WomensDayBundleSection() {
                   <motion.div
                     className="h-full bg-gold-gradient transition-all duration-300"
                     style={{
-                      width: `${Math.min((selectedTotalCount / BUNDLE_TARGET_COUNT) * 100, 100)}%`,
+                      width: `${Math.min((selectedTotalSlots / BUNDLE_TARGET_COUNT) * 100, 100)}%`,
                     }}
                   />
                 </div>
 
-                {selectedTotalCount > BUNDLE_TARGET_COUNT && (
+                {selectedTotalSlots > BUNDLE_TARGET_COUNT && (
                   <p className="text-[11px] text-primary flex items-center gap-1 mt-1 font-medium">
                     <Info className="size-3 shrink-0" />
                     <span>
                       {pick(
-                        `تم اختيار ${selectedTotalCount - BUNDLE_TARGET_COUNT} عطر إضافي سيُحسب بسعره الأصلي من المتجر.`,
-                        `${selectedTotalCount - BUNDLE_TARGET_COUNT} extra perfume(s) will be charged at regular store price.`,
+                        `تم اختيار ما يعادل ${selectedTotalSlots - BUNDLE_TARGET_COUNT} عطر إضافي سيُحسب بقيمته الأصلية من المتجر.`,
+                        `${selectedTotalSlots - BUNDLE_TARGET_COUNT} extra unit(s) will be charged at regular store price.`,
                       )}
                     </span>
                   </p>
@@ -388,6 +406,7 @@ export function WomensDayBundleSection() {
                       const count = selectedMap[p.id] || 0;
                       const isSoldOut = p.stock_quantity <= 0;
                       const price = effectivePrice(p);
+                      const isTwoSlots = TWO_SLOT_PRODUCT_IDS.has(p.id);
 
                       return (
                         <div
@@ -406,6 +425,15 @@ export function WomensDayBundleSection() {
                               className="size-full object-cover group-hover:scale-105 transition-transform duration-300"
                               loading="lazy"
                             />
+                            
+                            {/* Two Slots Badge */}
+                            {isTwoSlots && (
+                              <div className="absolute top-2 end-2 flex items-center gap-1 rounded-full bg-amber-900/80 backdrop-blur-sm border border-amber-400/40 text-amber-200 text-[10px] font-bold px-2 py-0.5 shadow-md">
+                                <Package className="size-3" />
+                                <span>{pick("يُحسب بـ 2", "Counts as 2")}</span>
+                              </div>
+                            )}
+
                             {count > 0 && (
                               <div className="absolute top-2 start-2 flex size-6 items-center justify-center rounded-full bg-gold-gradient text-primary-foreground text-xs font-bold shadow-md">
                                 {count}
@@ -426,6 +454,11 @@ export function WomensDayBundleSection() {
                                 </span>
                               )}
                             </div>
+                            {isTwoSlots && (
+                              <p className="text-[10px] text-amber-600 dark:text-amber-400 font-medium mt-0.5">
+                                {pick("بوكس عطر + بخور ملكي", "Perfume & Royal Incense Box")}
+                              </p>
+                            )}
                           </div>
 
                           {/* Counter / Selector Actions */}
@@ -478,12 +511,12 @@ export function WomensDayBundleSection() {
                     )}
                   </div>
                   <p className="text-[11px] text-muted-foreground mt-0.5">
-                    {selectedTotalCount >= BUNDLE_TARGET_COUNT
+                    {selectedTotalSlots >= BUNDLE_TARGET_COUNT
                       ? pick(
-                          "أول 4 عطور بـ 50 ر.ع + العطور الإضافية بسعرها الطبيعي",
-                          "First 4 perfumes = 50 OMR + Extras at regular price",
+                          "أول 4 عطور بـ 50 ر.ع + أي وحدات إضافية بسعرها الطبيعي",
+                          "First 4 perfume units = 50 OMR + Extras at regular price",
                         )
-                      : pick(`اخترتِ ${selectedTotalCount} من 4 عطور مطلوبة`, `Selected ${selectedTotalCount} of 4 required`)}
+                      : pick(`اخترتِ ما يعادل ${selectedTotalSlots} من 4 عطور مطلوبة`, `Selected ${selectedTotalSlots} of 4 required`)}
                   </p>
                 </div>
 
@@ -492,7 +525,7 @@ export function WomensDayBundleSection() {
                     onClick={() => {
                       setSelectedMap({});
                     }}
-                    disabled={selectedTotalCount === 0}
+                    disabled={selectedTotalSlots === 0}
                     className="px-3 py-3 rounded-xl border border-border text-xs text-muted-foreground hover:text-foreground disabled:opacity-30 cursor-pointer"
                   >
                     {pick("مسح الكل", "Clear")}
@@ -500,7 +533,7 @@ export function WomensDayBundleSection() {
 
                   <button
                     onClick={handleAddBundleToCart}
-                    disabled={selectedTotalCount < BUNDLE_TARGET_COUNT}
+                    disabled={selectedTotalSlots < BUNDLE_TARGET_COUNT}
                     className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-7 py-3 rounded-xl bg-gold-gradient text-primary-foreground font-bold text-sm shadow-gold-glow hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all"
                   >
                     <ShoppingBag className="size-4" />
