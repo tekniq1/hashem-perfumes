@@ -51,12 +51,9 @@ export function WomensDayBundleSection() {
   }, [selectedMap, products]);
 
   // Pricing calculation
-  // First 4 items = 50 OMR.
-  // Any extra items (beyond 4) = regular price.
   const pricingDetails = useMemo(() => {
     if (selectedTotalCount === 0) return { total: 0, bundlePrice: 0, extraPrice: 0, regularTotal: 0, savings: 0 };
 
-    // Flatten all selected perfume instances
     const flatItems: { id: string; price: number; name: string }[] = [];
     selectedItems.forEach(({ product, qty }) => {
       const p = effectivePrice(product);
@@ -77,8 +74,6 @@ export function WomensDayBundleSection() {
       };
     }
 
-    // Sort to give user maximum benefit or simply first 4 in bundle
-    // Sort descending by price so the 4 most expensive perfumes go into the 50 OMR bundle!
     const sorted = [...flatItems].sort((a, b) => b.price - a.price);
     const bundleItems = sorted.slice(0, BUNDLE_TARGET_COUNT);
     const extraItems = sorted.slice(BUNDLE_TARGET_COUNT);
@@ -132,18 +127,8 @@ export function WomensDayBundleSection() {
       return;
     }
 
-    // Prepare bundle item name with breakdown
-    const perfumesSummaryAr = selectedItems
-      .map((it) => `${it.product.name_ar} (×${it.qty})`)
-      .join(" + ");
-    const perfumesSummaryEn = selectedItems
-      .map((it) => `${it.product.name_en} (×${it.qty})`)
-      .join(" + ");
-
-    // First image from first selected product
     const bundleImage = selectedItems[0]?.product.images?.[0] || "/favicon.png";
 
-    // Flatten items sorted by price descending
     const flatItems: { product: Product; price: number }[] = [];
     selectedItems.forEach(({ product, qty }) => {
       const p = effectivePrice(product);
@@ -156,10 +141,9 @@ export function WomensDayBundleSection() {
     const bundleParts = flatItems.slice(0, BUNDLE_TARGET_COUNT);
     const extraParts = flatItems.slice(BUNDLE_TARGET_COUNT);
 
-    // Calculate bundle cost price
     const bundleCost = bundleParts.reduce((acc, it) => acc + (it.product.cost_price || 0), 0);
 
-    // 1. Add the 4-perfume bundle item at 50 OMR
+    // 1. Add bundle item (50 OMR)
     add(
       {
         id: `${BUNDLE_ITEM_ID}-${Date.now().toString().slice(-5)}`,
@@ -173,7 +157,7 @@ export function WomensDayBundleSection() {
       1,
     );
 
-    // 2. Add extra items at their regular price if any
+    // 2. Add extra items if any
     const extraCountMap: Record<string, { product: Product; count: number }> = {};
     extraParts.forEach(({ product }) => {
       if (!extraCountMap[product.id]) {
@@ -211,32 +195,32 @@ export function WomensDayBundleSection() {
 
   return (
     <>
-      {/* 🌸 Main Promotional Banner on Homepage */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 my-8">
+      {/* 👑 Royal Luxury Promotional Banner on Homepage matching Hashem LelTeeb Palette */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 my-6">
         <motion.div
-          initial={{ opacity: 0, scale: 0.98 }}
-          whileInView={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="relative overflow-hidden rounded-3xl border-2 border-rose-400/40 bg-gradient-to-br from-rose-950/40 via-card to-amber-950/30 p-6 sm:p-9 shadow-2xl backdrop-blur-xl"
+          transition={{ duration: 0.5 }}
+          className="relative overflow-hidden rounded-3xl border border-primary/40 bg-card/90 shadow-gold-glow backdrop-blur-xl p-6 sm:p-9"
         >
-          {/* Aesthetic background glows */}
-          <div className="pointer-events-none absolute -top-24 -start-20 size-72 rounded-full bg-rose-500/20 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-24 -end-20 size-72 rounded-full bg-amber-500/20 blur-3xl" />
+          {/* Subtle Royal Gold Ambience Glow */}
+          <div className="pointer-events-none absolute -top-20 -start-20 size-64 rounded-full bg-primary/15 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-20 -end-20 size-64 rounded-full bg-primary/10 blur-3xl" />
 
           <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-8">
             {/* Left Content */}
             <div className="flex-1 text-center lg:text-start space-y-3 sm:space-y-4">
-              <div className="inline-flex items-center gap-2 rounded-full bg-rose-500/15 border border-rose-400/30 px-3.5 py-1 text-xs font-bold text-rose-300">
-                <Sparkles className="size-3.5 text-amber-300 animate-spin-slow" />
+              <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/30 px-3.5 py-1 text-xs font-bold text-primary">
+                <Sparkles className="size-3.5 text-primary" />
                 <span>{pick("عرض خاص لفترة محدودة — 5 أيام فقط", "Limited Time Offer — 5 Days Only")}</span>
-                <span className="flex size-2 rounded-full bg-rose-400 animate-ping" />
+                <span className="flex size-2 rounded-full bg-primary animate-ping" />
               </div>
 
-              <h2 className="font-display text-2xl sm:text-4xl lg:text-5xl font-extrabold text-foreground leading-tight">
+              <h2 className="font-display text-2xl sm:text-4xl lg:text-5xl font-black text-foreground leading-tight tracking-tight">
                 {pick("احتفالاً بيوم المرأة العمانية", "Celebrating Omani Women's Day")} 🌸
                 <br />
-                <span className="bg-gradient-to-r from-rose-300 via-amber-200 to-amber-400 bg-clip-text text-transparent">
+                <span className="text-gold-gradient font-black">
                   {pick("اختاري 4 عطور بـ 50 ر.ع فقط!", "Pick Any 4 Perfumes for Only 50 OMR!")}
                 </span>
               </h2>
@@ -249,39 +233,37 @@ export function WomensDayBundleSection() {
               </p>
 
               {/* Badges / Highlights */}
-              <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-3">
-                <div className="flex items-center gap-1.5 rounded-xl bg-card/80 border border-border/70 px-3 py-1.5 text-xs font-semibold text-foreground">
-                  <Gift className="size-4 text-rose-400" />
+              <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-2.5">
+                <div className="flex items-center gap-1.5 rounded-xl bg-primary/5 border border-primary/20 px-3 py-1.5 text-xs font-semibold text-foreground">
+                  <Gift className="size-4 text-primary" />
                   <span>{pick("توفير استثنائي", "Exceptional Savings")}</span>
                 </div>
-                <div className="flex items-center gap-1.5 rounded-xl bg-card/80 border border-border/70 px-3 py-1.5 text-xs font-semibold text-foreground">
-                  <Heart className="size-4 text-amber-400" />
+                <div className="flex items-center gap-1.5 rounded-xl bg-primary/5 border border-primary/20 px-3 py-1.5 text-xs font-semibold text-foreground">
+                  <Heart className="size-4 text-primary" />
                   <span>{pick("حرية اختيار أي عطر بالموقع", "Freedom to choose any perfume")}</span>
                 </div>
-                <div className="flex items-center gap-1.5 rounded-xl bg-card/80 border border-border/70 px-3 py-1.5 text-xs font-semibold text-foreground">
-                  <Clock className="size-4 text-rose-400" />
+                <div className="flex items-center gap-1.5 rounded-xl bg-primary/5 border border-primary/20 px-3 py-1.5 text-xs font-semibold text-foreground">
+                  <Clock className="size-4 text-primary" />
                   <span>{pick("متبقي 5 أيام فقط", "Only 5 Days Left")}</span>
                 </div>
               </div>
             </div>
 
             {/* Right Action Box */}
-            <div className="shrink-0 flex flex-col items-center gap-3">
-              <div className="relative group">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.96 }}
-                  onClick={() => setModalOpen(true)}
-                  className="relative cursor-pointer overflow-hidden rounded-2xl bg-gradient-to-r from-rose-500 via-amber-500 to-rose-600 px-8 sm:px-10 py-4 text-base font-bold text-white shadow-xl shadow-rose-500/25 transition-all hover:shadow-rose-500/40"
-                >
-                  <span className="flex items-center gap-2.5">
-                    <Sparkles className="size-5 animate-pulse text-amber-200" />
-                    <span>{pick("صممي باقتكِ الآن ✨", "Build Your Bundle Now ✨")}</span>
-                    <ChevronRight className="size-4 rtl:rotate-180" />
-                  </span>
-                </motion.button>
-              </div>
-              <span className="text-[11px] font-medium text-rose-300/80">
+            <div className="shrink-0 flex flex-col items-center gap-2.5">
+              <motion.button
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => setModalOpen(true)}
+                className="group relative cursor-pointer overflow-hidden rounded-2xl bg-gold-gradient px-8 sm:px-10 py-4 text-sm sm:text-base font-bold text-primary-foreground shadow-gold-glow hover:opacity-90 transition-all"
+              >
+                <span className="flex items-center gap-2.5">
+                  <Sparkles className="size-4.5" />
+                  <span>{pick("صممي باقتكِ الآن ✨", "Build Your Bundle Now ✨")}</span>
+                  <ChevronRight className="size-4 rtl:rotate-180 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+                </span>
+              </motion.button>
+              <span className="text-xs font-semibold text-primary">
                 {pick("سعر 4 عطور: 50 ر.ع فقط", "Price for 4 perfumes: 50 OMR only")}
               </span>
             </div>
@@ -289,7 +271,7 @@ export function WomensDayBundleSection() {
         </motion.div>
       </section>
 
-      {/* 🌸 Bundle Builder Modal */}
+      {/* 🌸 Bundle Builder Modal in Pure Hashem LelTeeb Luxury Style */}
       <AnimatePresence>
         {modalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
@@ -304,16 +286,16 @@ export function WomensDayBundleSection() {
 
             {/* Modal Body */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              className="relative z-10 w-full max-w-4xl max-h-[90vh] flex flex-col rounded-3xl border border-rose-400/40 bg-card shadow-2xl overflow-hidden"
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              transition={{ type: "spring", stiffness: 300, damping: 26 }}
+              className="relative z-10 w-full max-w-4xl max-h-[90vh] flex flex-col rounded-3xl border border-primary/30 bg-card shadow-gold-glow overflow-hidden"
             >
               {/* Modal Header */}
               <div className="sticky top-0 z-20 flex items-center justify-between border-b border-border bg-card/95 px-5 py-4 backdrop-blur-md">
                 <div className="flex items-center gap-3">
-                  <div className="flex size-10 items-center justify-center rounded-xl bg-rose-500/15 text-rose-400 border border-rose-500/30">
+                  <div className="flex size-10 items-center justify-center rounded-xl bg-gold-gradient text-primary-foreground shadow-sm">
                     <Gift className="size-5" />
                   </div>
                   <div>
@@ -338,37 +320,39 @@ export function WomensDayBundleSection() {
               </div>
 
               {/* Progress Tracker */}
-              <div className="bg-muted/40 px-5 py-3 border-b border-border space-y-2">
+              <div className="bg-primary/5 px-5 py-3 border-b border-primary/15 space-y-2">
                 <div className="flex items-center justify-between text-xs sm:text-sm font-bold">
                   <span className="flex items-center gap-1.5 text-foreground">
                     <span>{pick("العطور المختارة:", "Selected Perfumes:")}</span>
                     <span
-                      className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                      className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
                         selectedTotalCount >= BUNDLE_TARGET_COUNT
-                          ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                          : "bg-rose-500/20 text-rose-400 border border-rose-500/30"
+                          ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30"
+                          : "bg-primary/15 text-primary border border-primary/30"
                       }`}
                     >
                       {selectedTotalCount} / {BUNDLE_TARGET_COUNT}
                     </span>
                   </span>
 
-                  <span className="text-primary font-bold">
+                  <span className="font-bold">
                     {selectedTotalCount >= BUNDLE_TARGET_COUNT ? (
-                      <span className="flex items-center gap-1 text-emerald-500">
+                      <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
                         <Check className="size-4" />
-                        <span>{pick("اكتملت باقتكِ!", "Bundle Complete!")}</span>
+                        <span>{pick("اكتملت باقتكِ الفاخرة!", "Bundle Complete!")}</span>
                       </span>
                     ) : (
-                      <span>{pick(`متبقي ${BUNDLE_TARGET_COUNT - selectedTotalCount} عطور`, `${BUNDLE_TARGET_COUNT - selectedTotalCount} more needed`)}</span>
+                      <span className="text-primary font-semibold">
+                        {pick(`متبقي ${BUNDLE_TARGET_COUNT - selectedTotalCount} عطور`, `${BUNDLE_TARGET_COUNT - selectedTotalCount} more needed`)}
+                      </span>
                     )}
                   </span>
                 </div>
 
                 {/* Progress bar */}
-                <div className="h-2 w-full bg-border rounded-full overflow-hidden">
+                <div className="h-2 w-full bg-primary/10 rounded-full overflow-hidden">
                   <motion.div
-                    className="h-full bg-gradient-to-r from-rose-500 via-amber-400 to-emerald-500 transition-all duration-300"
+                    className="h-full bg-gold-gradient transition-all duration-300"
                     style={{
                       width: `${Math.min((selectedTotalCount / BUNDLE_TARGET_COUNT) * 100, 100)}%`,
                     }}
@@ -376,7 +360,7 @@ export function WomensDayBundleSection() {
                 </div>
 
                 {selectedTotalCount > BUNDLE_TARGET_COUNT && (
-                  <p className="text-[11px] text-amber-500 flex items-center gap-1 mt-1">
+                  <p className="text-[11px] text-primary flex items-center gap-1 mt-1 font-medium">
                     <Info className="size-3 shrink-0" />
                     <span>
                       {pick(
@@ -410,8 +394,8 @@ export function WomensDayBundleSection() {
                           key={p.id}
                           className={`group relative flex flex-col rounded-2xl border p-3 transition-all ${
                             count > 0
-                              ? "border-rose-500 bg-rose-500/5 ring-1 ring-rose-500/30"
-                              : "border-border/80 bg-card hover:border-border"
+                              ? "border-primary bg-primary/5 ring-1 ring-primary/40 shadow-sm"
+                              : "border-border/80 bg-card hover:border-primary/40"
                           } ${isSoldOut ? "opacity-50 pointer-events-none" : ""}`}
                         >
                           {/* Image */}
@@ -423,7 +407,7 @@ export function WomensDayBundleSection() {
                               loading="lazy"
                             />
                             {count > 0 && (
-                              <div className="absolute top-2 start-2 flex size-6 items-center justify-center rounded-full bg-rose-500 text-white text-xs font-bold shadow-md">
+                              <div className="absolute top-2 start-2 flex size-6 items-center justify-center rounded-full bg-gold-gradient text-primary-foreground text-xs font-bold shadow-md">
                                 {count}
                               </div>
                             )}
@@ -449,7 +433,7 @@ export function WomensDayBundleSection() {
                             {count === 0 ? (
                               <button
                                 onClick={() => handleIncrement(p.id, p.stock_quantity)}
-                                className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl bg-primary/10 hover:bg-rose-500 hover:text-white text-primary text-xs font-bold transition-colors cursor-pointer"
+                                className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl bg-primary/10 hover:bg-gold-gradient hover:text-primary-foreground text-primary text-xs font-bold transition-all cursor-pointer"
                               >
                                 <Plus className="size-3.5" />
                                 <span>{pick("اختيار", "Add")}</span>
@@ -458,14 +442,14 @@ export function WomensDayBundleSection() {
                               <div className="w-full flex items-center justify-between gap-1">
                                 <button
                                   onClick={() => handleDecrement(p.id)}
-                                  className="size-7 rounded-lg bg-muted flex items-center justify-center text-foreground hover:bg-destructive/20 hover:text-destructive transition-colors cursor-pointer"
+                                  className="size-7 rounded-lg border border-border bg-card flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                                 >
                                   <Minus className="size-3" />
                                 </button>
-                                <span className="text-xs font-bold text-foreground">{count}</span>
+                                <span className="text-xs font-bold text-primary">{count}</span>
                                 <button
                                   onClick={() => handleIncrement(p.id, p.stock_quantity)}
-                                  className="size-7 rounded-lg bg-rose-500 text-white flex items-center justify-center hover:bg-rose-600 transition-colors cursor-pointer"
+                                  className="size-7 rounded-lg bg-gold-gradient text-primary-foreground flex items-center justify-center hover:opacity-90 shadow-xs transition-opacity cursor-pointer"
                                 >
                                   <Plus className="size-3" />
                                 </button>
@@ -484,11 +468,11 @@ export function WomensDayBundleSection() {
                 <div>
                   <div className="flex items-baseline gap-2">
                     <span className="text-xs text-muted-foreground">{pick("الإجمالي النهائي:", "Total:")}</span>
-                    <span className="text-xl sm:text-2xl font-black text-rose-500">
+                    <span className="text-xl sm:text-2xl font-black text-primary">
                       {money(pricingDetails.total)}
                     </span>
                     {pricingDetails.savings > 0 && (
-                      <span className="text-xs font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-md">
+                      <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/15 border border-emerald-500/25 px-2 py-0.5 rounded-md">
                         {pick(`وفرتِ ${money(pricingDetails.savings)}!`, `Saved ${money(pricingDetails.savings)}!`)}
                       </span>
                     )}
@@ -517,7 +501,7 @@ export function WomensDayBundleSection() {
                   <button
                     onClick={handleAddBundleToCart}
                     disabled={selectedTotalCount < BUNDLE_TARGET_COUNT}
-                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-7 py-3 rounded-xl bg-gradient-to-r from-rose-500 via-amber-500 to-rose-600 text-white font-bold text-sm shadow-lg shadow-rose-500/25 hover:opacity-95 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all"
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-7 py-3 rounded-xl bg-gold-gradient text-primary-foreground font-bold text-sm shadow-gold-glow hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all"
                   >
                     <ShoppingBag className="size-4" />
                     <span>{pick("إضافة الباقة إلى السلة 🛍️", "Add Bundle to Cart 🛍️")}</span>
