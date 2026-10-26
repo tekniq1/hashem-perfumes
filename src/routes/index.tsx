@@ -22,7 +22,7 @@ import { fetchBranches } from "@/lib/branches";
 import { LotterySection } from "@/components/site/LotteryModal";
 import { LotteryWinners } from "@/components/site/LotteryWinners";
 import { ReviewsSection } from "@/components/site/ReviewsSection";
-import { WomensDayBundleSection } from "@/components/site/WomensDayBundle";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -166,9 +166,6 @@ function Home() {
     <div className="space-y-6 sm:space-y-10">
       {/* 👑 Welcome Hero Banner with Animated CTAs */}
       <Hero />
-
-      {/* 🌸 Omani Women's Day Exclusive Bundle (4 Perfumes for 50 OMR) */}
-      <WomensDayBundleSection />
 
       {/* 🎬 Story & Promo Reels Showcase */}
       <VideoReels />
