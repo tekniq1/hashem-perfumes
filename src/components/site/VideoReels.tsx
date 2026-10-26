@@ -1,165 +1,55 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { AnimatePresence, motion, useInView } from "framer-motion";
-import { ChevronLeft, ChevronRight, ShoppingBag, Volume2, VolumeX, X } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronLeft, ChevronRight, ShoppingBag, Volume2, VolumeX } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { fetchPromoVideos, type PromoVideo } from "@/lib/videos";
 
-const STORY_DURATION_MS = 5000;
+const BANNER_DURATION_MS = 6000;
 
-function ReelCard({
-  video,
-  index,
-  isActive,
-  progress,
-  onOpen,
-  cardRef,
-}: {
-  video: PromoVideo;
-  index: number;
-  isActive: boolean;
-  progress: number;
-  onOpen: () => void;
-  cardRef: (el: HTMLButtonElement | null) => void;
-}) {
-  const { pick } = useI18n();
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  // Force DOM-level properties for the video
-  useEffect(() => {
-    const el = videoRef.current;
-    if (!el) return;
-    el.muted = true;
-    el.defaultMuted = true;
-    el.playsInline = true;
-    el.setAttribute("muted", "");
-    el.setAttribute("playsinline", "");
-    el.setAttribute("webkit-playsinline", "");
-  }, []);
-
-  // ONLY play if active to save bandwidth
-  useEffect(() => {
-    const el = videoRef.current;
-    if (!el) return;
-    el.muted = true;
-    if (isActive) {
-      el.play().catch(() => {});
-    } else {
-      el.pause();
-    }
-  }, [isActive]);
-
-  return (
-    <motion.button
-      ref={cardRef}
-      type="button"
-      onClick={onOpen}
-      initial={{ opacity: 0, y: 28 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ type: "spring", stiffness: 120, damping: 18, delay: index * 0.08 }}
-      className={`group relative w-[15rem] shrink-0 snap-center overflow-hidden rounded-3xl p-0 text-start transition-all duration-500 ${
-        isActive
-          ? "ring-2 ring-primary/80 shadow-gold-glow scale-[1.02] opacity-100"
-          : "opacity-85 hover:opacity-100 ring-1 ring-border/40"
-      }`}
-    >
-      {/* 8-second progress bar for active card */}
-      {isActive && (
-        <div className="absolute inset-x-0 top-0 z-20 h-1.5 overflow-hidden bg-black/40">
-          <div
-            className="h-full bg-primary transition-all duration-75 ease-linear rounded-full shadow-[0_0_8px_rgba(212,175,55,0.8)]"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-      )}
-
-      {/* Active playing indicator badge */}
-      {isActive && (
-        <div className="absolute start-3 top-3.5 z-20 flex items-center gap-1.5 rounded-full bg-black/50 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur-md">
-          <span className="relative flex size-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>
-            <span className="relative inline-flex size-2 rounded-full bg-primary"></span>
-          </span>
-          <span>8s</span>
-        </div>
-      )}
-
-      <video
-        ref={videoRef}
-        src={video.video_url}
-        poster={video.thumbnail_url ?? undefined}
-        muted
-        loop
-        playsInline
-        preload="none"
-        className="aspect-[9/16] w-full object-cover transition-transform duration-700 group-hover:scale-105"
-      />
-      <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/80 via-foreground/30 to-transparent p-4 text-sm font-semibold text-white drop-shadow">
-        {pick(video.title_ar, video.title_en)}
-      </span>
-    </motion.button>
-  );
-}
-
-function ReelModal({
-  videos,
-  initialIndex = 0,
-  onClose,
-}: {
-  videos: PromoVideo[];
-  initialIndex?: number;
-  onClose: () => void;
-}) {
+export function VideoReels() {
   const { t, pick, lang } = useI18n();
   const isRtl = lang === "ar";
-  const [currentIndex, setCurrentIndex] = useState(initialIndex);
-  const [muted, setMuted] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [muted, setMuted] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const holdTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isHoldingRef = useRef(false);
+  // Touch/swipe tracking
+  const touchStartX = useRef<number | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  const currentVideo = videos[currentIndex];
+  const videos = useQuery({
+    queryKey: ["promo-videos"],
+    queryFn: () => fetchPromoVideos(true),
+  });
+  const list: PromoVideo[] = videos.data ?? [];
 
-  const handleNext = useCallback(() => {
-    if (currentIndex < videos.length - 1) {
-      setCurrentIndex((prev) => prev + 1);
-      setProgress(0);
-    } else {
-      onClose();
-    }
-  }, [currentIndex, videos.length, onClose]);
+  const goTo = useCallback(
+    (idx: number, wrap = true) => {
+      if (list.length === 0) return;
+      const next = wrap ? ((idx % list.length) + list.length) % list.length : idx;
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setActiveIndex(next);
+        setProgress(0);
+        setIsTransitioning(false);
+      }, 280);
+    },
+    [list.length],
+  );
 
-  const handlePrev = useCallback(() => {
-    if (currentIndex > 0) {
-      setCurrentIndex((prev) => prev - 1);
-      setProgress(0);
-    } else {
-      setProgress(0);
-      if (videoRef.current) {
-        videoRef.current.currentTime = 0;
-        videoRef.current.play().catch(() => {});
-      }
-    }
-  }, [currentIndex]);
+  const handleNext = useCallback(() => goTo(activeIndex + 1), [activeIndex, goTo]);
+  const handlePrev = useCallback(() => goTo(activeIndex - 1), [activeIndex, goTo]);
 
-  // Handle 8-second auto advance timer with smooth progress bar
+  // Auto-advance timer
   useEffect(() => {
-    if (isPaused) {
-      videoRef.current?.pause();
-      return;
-    }
-
-    videoRef.current?.play().catch(() => {});
-
-    const updateInterval = 50; // update progress every 50ms
-    const step = (updateInterval / STORY_DURATION_MS) * 100;
-
-    const interval = setInterval(() => {
+    if (isPaused || list.length === 0) return;
+    const intervalMs = 50;
+    const step = (intervalMs / BANNER_DURATION_MS) * 100;
+    const timer = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
           handleNext();
@@ -167,369 +57,230 @@ function ReelModal({
         }
         return prev + step;
       });
-    }, updateInterval);
+    }, intervalMs);
+    return () => clearInterval(timer);
+  }, [isPaused, list.length, handleNext, activeIndex]);
 
-    return () => clearInterval(interval);
-  }, [currentIndex, isPaused, handleNext]);
-
-  // Restart progress when index changes
+  // Reset progress on video change
   useEffect(() => {
     setProgress(0);
-    if (videoRef.current) {
-      videoRef.current.currentTime = 0;
-      videoRef.current.play().catch(() => {});
-    }
-  }, [currentIndex]);
+    const el = videoRef.current;
+    if (!el) return;
+    el.currentTime = 0;
+    el.muted = muted;
+    el.play().catch(() => {});
+  }, [activeIndex]);
+
+  // Sync mute state to video element
+  useEffect(() => {
+    if (videoRef.current) videoRef.current.muted = muted;
+  }, [muted]);
 
   // Keyboard navigation
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-      if (e.key === "ArrowRight") {
-        isRtl ? handlePrev() : handleNext();
-      }
-      if (e.key === "ArrowLeft") {
-        isRtl ? handleNext() : handlePrev();
-      }
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") isRtl ? handleNext() : handlePrev();
+      if (e.key === "ArrowRight") isRtl ? handlePrev() : handleNext();
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose, handleNext, handlePrev, isRtl]);
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [handleNext, handlePrev, isRtl]);
 
-  // Press and hold to pause story
-  const startHold = () => {
-    holdTimeoutRef.current = setTimeout(() => {
-      isHoldingRef.current = true;
-      setIsPaused(true);
-    }, 150);
+  // Touch swipe
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    setIsPaused(true);
   };
-
-  const endHold = () => {
-    if (holdTimeoutRef.current) {
-      clearTimeout(holdTimeoutRef.current);
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(dx) > 40) {
+      const swipeLeft = dx < 0;
+      swipeLeft
+        ? isRtl ? handlePrev() : handleNext()
+        : isRtl ? handleNext() : handlePrev();
     }
-    if (isHoldingRef.current) {
-      isHoldingRef.current = false;
-      setIsPaused(false);
-    }
-  };
-
-  if (!currentVideo) return null;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-foreground/85 p-2 sm:p-4 backdrop-blur-md"
-      onClick={onClose}
-    >
-      {/* Desktop side navigation buttons */}
-      {currentIndex > 0 && (
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            handlePrev();
-          }}
-          aria-label="Previous story"
-          className="hidden md:flex absolute start-6 top-1/2 -translate-y-1/2 z-30 size-12 items-center justify-center rounded-full bg-background/60 text-foreground shadow-lg backdrop-blur-md transition-all hover:bg-background hover:scale-110"
-        >
-          {isRtl ? <ChevronRight className="size-6" /> : <ChevronLeft className="size-6" />}
-        </button>
-      )}
-
-      {currentIndex < videos.length - 1 && (
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleNext();
-          }}
-          aria-label="Next story"
-          className="hidden md:flex absolute end-6 top-1/2 -translate-y-1/2 z-30 size-12 items-center justify-center rounded-full bg-background/60 text-foreground shadow-lg backdrop-blur-md transition-all hover:bg-background hover:scale-110"
-        >
-          {isRtl ? <ChevronLeft className="size-6" /> : <ChevronRight className="size-6" />}
-        </button>
-      )}
-
-      <motion.div
-        initial={{ scale: 0.94, y: 20 }}
-        animate={{ scale: 1, y: 0 }}
-        exit={{ scale: 0.94, opacity: 0 }}
-        transition={{ type: "spring", stiffness: 160, damping: 20 }}
-        onClick={(e) => e.stopPropagation()}
-        className="relative flex flex-col justify-between w-full max-w-sm aspect-[9/16] overflow-hidden rounded-3xl border border-primary/30 bg-card shadow-gold-glow select-none"
-        onMouseDown={startHold}
-        onMouseUp={endHold}
-        onTouchStart={startHold}
-        onTouchEnd={endHold}
-        onMouseLeave={endHold}
-      >
-        {/* Story Progress Bars on top */}
-        <div className="absolute inset-x-0 top-0 z-30 flex gap-1.5 p-3 pt-3.5 bg-gradient-to-b from-black/70 via-black/30 to-transparent">
-          {videos.map((_, idx) => {
-            let widthPercent = 0;
-            if (idx < currentIndex) widthPercent = 100;
-            else if (idx === currentIndex) widthPercent = progress;
-
-            return (
-              <div
-                key={idx}
-                className="h-1 flex-1 overflow-hidden rounded-full bg-white/30 backdrop-blur-sm"
-              >
-                <div
-                  className="h-full bg-white transition-all duration-75 ease-linear rounded-full"
-                  style={{ width: `${widthPercent}%` }}
-                />
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Video Player */}
-        <div className="absolute inset-0 z-10 bg-black">
-          <AnimatePresence mode="wait">
-            <motion.video
-              key={currentVideo.id}
-              ref={videoRef}
-              src={currentVideo.video_url}
-              poster={currentVideo.thumbnail_url ?? undefined}
-              autoPlay
-              playsInline
-              muted={muted}
-              initial={{ opacity: 0.8 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0.8 }}
-              transition={{ duration: 0.2 }}
-              className="h-full w-full object-cover"
-              onEnded={handleNext}
-            />
-          </AnimatePresence>
-        </div>
-
-        {/* Story Tap Zones (Left / Right for quick clicking) */}
-        <div className="absolute inset-y-16 inset-x-0 z-20 flex">
-          <div
-            className="w-1/3 h-full cursor-pointer"
-            onClick={(e) => {
-              e.stopPropagation();
-              isRtl ? handleNext() : handlePrev();
-            }}
-          />
-          <div className="w-1/3 h-full cursor-pointer" />
-          <div
-            className="w-1/3 h-full cursor-pointer"
-            onClick={(e) => {
-              e.stopPropagation();
-              isRtl ? handlePrev() : handleNext();
-            }}
-          />
-        </div>
-
-        {/* Header Actions */}
-        <div className="relative z-30 flex items-center justify-between px-3.5 pt-7">
-          <button
-            onClick={() => setMuted((m) => !m)}
-            aria-label={muted ? t("unmute") : t("mute")}
-            className="rounded-full bg-black/40 p-2 text-white backdrop-blur-md transition-colors hover:bg-black/60"
-          >
-            {muted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
-          </button>
-          <button
-            onClick={onClose}
-            aria-label="close"
-            className="rounded-full bg-black/40 p-2 text-white backdrop-blur-md transition-colors hover:bg-black/60"
-          >
-            <X className="size-4" />
-          </button>
-        </div>
-
-        {/* Bottom Details & CTA */}
-        <div className="relative z-30 space-y-3 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-4 pt-10">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentVideo.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-            >
-              <p className="font-display text-base font-semibold text-white drop-shadow">
-                {pick(currentVideo.title_ar, currentVideo.title_en)}
-              </p>
-            </motion.div>
-          </AnimatePresence>
-
-          {currentVideo.target_product_id ? (
-            <Link
-              to="/product/$id"
-              params={{ id: currentVideo.target_product_id }}
-              onClick={onClose}
-              className="flex items-center justify-center gap-2 rounded-full bg-gold-gradient px-5 py-3 text-sm font-semibold text-primary-foreground shadow-md transition-transform active:scale-95"
-            >
-              <ShoppingBag className="size-4" />
-              {t("shop_tagged")}
-            </Link>
-          ) : currentVideo.cta_link ? (
-            <a
-              href={currentVideo.cta_link}
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center justify-center gap-2 rounded-full bg-gold-gradient px-5 py-3 text-sm font-semibold text-primary-foreground shadow-md transition-transform active:scale-95"
-            >
-              {t("shop_tagged")}
-            </a>
-          ) : null}
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-}
-
-export function VideoReels() {
-  const { t, lang } = useI18n();
-  const isRtl = lang === "ar";
-  const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [progress, setProgress] = useState(0);
-  const [isInteracting, setIsInteracting] = useState(false);
-
-  const sectionRef = useRef<HTMLElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const cardRefs = useRef<(HTMLButtonElement | null)[]>([]);
-
-  const isSectionInView = useInView(sectionRef, {
-    margin: "100px 0px 100px 0px",
-  });
-
-  const videos = useQuery({ queryKey: ["promo-videos"], queryFn: () => fetchPromoVideos(true) });
-  const list = videos.data ?? [];
-
-  // Track if user has manually scrolled to this section at least once
-  const hasScrolledToSection = useRef(false);
-  if (isSectionInView) hasScrolledToSection.current = true;
-
-  // Scroll the horizontal container only — never scrolls the page
-  useEffect(() => {
-    if (!hasScrolledToSection.current || list.length === 0) return;
-    const targetCard = cardRefs.current[activeIndex];
-    const container = containerRef.current;
-    if (targetCard && container) {
-      const cardLeft = targetCard.offsetLeft;
-      const cardWidth = targetCard.offsetWidth;
-      const containerWidth = container.offsetWidth;
-      container.scrollTo({
-        left: cardLeft - containerWidth / 2 + cardWidth / 2,
-        behavior: "smooth",
-      });
-    }
-  }, [activeIndex, list.length]);
-
-  // 8-second auto advance timer
-  useEffect(() => {
-    if (isInteracting || selectedIdx !== null || list.length === 0) {
-      return;
-    }
-
-    const intervalMs = 50;
-    const step = (intervalMs / STORY_DURATION_MS) * 100;
-
-    const timer = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          setActiveIndex((current) => (current + 1) % list.length);
-          return 0;
-        }
-        return prev + step;
-      });
-    }, intervalMs);
-
-    return () => clearInterval(timer);
-  }, [isInteracting, selectedIdx, list.length]);
-
-  // Reset progress whenever active card changes
-  useEffect(() => {
-    setProgress(0);
-  }, [activeIndex]);
-
-  const handleNextCard = () => {
-    setActiveIndex((current) => (current + 1) % list.length);
-  };
-
-  const handlePrevCard = () => {
-    setActiveIndex((current) => (current === 0 ? list.length - 1 : current - 1));
+    setTimeout(() => setIsPaused(false), 300);
   };
 
   if (!list.length) return null;
 
+  const current = list[activeIndex];
+
   return (
-    <section ref={sectionRef} className="mx-auto mt-4 sm:mt-6 max-w-7xl px-4 sm:px-6">
-      <div className="mb-4 sm:mb-6 flex items-center justify-between">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold font-display text-foreground">{t("promo_videos")}</h2>
+    <section
+      className="relative w-full overflow-hidden bg-black"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+      aria-label={t("promo_videos")}
+    >
+      {/* ─── Video Layer ─── */}
+      <div className="relative w-full aspect-[21/9] min-h-[220px] sm:min-h-[320px] lg:min-h-[420px] overflow-hidden">
+        <AnimatePresence mode="sync">
+          <motion.div
+            key={current.id}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: isTransitioning ? 0 : 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="absolute inset-0"
+          >
+            {/* Thumbnail shown instantly as poster */}
+            {current.thumbnail_url && (
+              <img
+                src={current.thumbnail_url}
+                alt={pick(current.title_ar, current.title_en)}
+                className="absolute inset-0 size-full object-cover"
+              />
+            )}
+
+            <video
+              ref={videoRef}
+              src={current.video_url}
+              poster={current.thumbnail_url ?? undefined}
+              autoPlay
+              muted={muted}
+              loop={list.length === 1}
+              playsInline
+              preload="auto"
+              className="absolute inset-0 size-full object-cover"
+              onEnded={() => list.length > 1 && handleNext()}
+            />
+          </motion.div>
+        </AnimatePresence>
+
+        {/* ─── Top gradient + Progress bar ─── */}
+        <div className="absolute inset-x-0 top-0 z-10 bg-gradient-to-b from-black/50 to-transparent pb-8 pt-3 px-4">
+          {/* Progress bars for each slide */}
+          {list.length > 1 && (
+            <div className="flex items-center gap-1.5">
+              {list.map((_, idx) => {
+                const isComplete = idx < activeIndex;
+                const isCurrent = idx === activeIndex;
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => goTo(idx)}
+                    aria-label={`Go to slide ${idx + 1}`}
+                    className="h-0.5 flex-1 overflow-hidden rounded-full bg-white/30 transition-all cursor-pointer hover:bg-white/50"
+                  >
+                    <div
+                      className="h-full bg-primary rounded-full transition-none"
+                      style={{
+                        width: isComplete ? "100%" : isCurrent ? `${progress}%` : "0%",
+                        transitionDuration: isCurrent ? "75ms" : "0ms",
+                        transitionTimingFunction: "linear",
+                      }}
+                    />
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
-        {/* Carousel arrows */}
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={isRtl ? handleNextCard : handlePrevCard}
-            aria-label="Previous reel"
-            className="flex size-10 items-center justify-center rounded-full border border-border bg-card/80 text-foreground transition-all hover:bg-primary/20 hover:border-primary/50"
-          >
-            <ChevronRight className="size-5" />
-          </button>
-          <button
-            type="button"
-            onClick={isRtl ? handlePrevCard : handleNextCard}
-            aria-label="Next reel"
-            className="flex size-10 items-center justify-center rounded-full border border-border bg-card/80 text-foreground transition-all hover:bg-primary/20 hover:border-primary/50"
-          >
-            <ChevronLeft className="size-5" />
-          </button>
+        {/* ─── Side Navigation Arrows (desktop) ─── */}
+        {list.length > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={isRtl ? handleNext : handlePrev}
+              aria-label="Previous"
+              className="absolute start-3 top-1/2 -translate-y-1/2 z-20 hidden sm:flex size-11 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md border border-white/10 hover:bg-black/60 hover:scale-110 transition-all"
+            >
+              <ChevronRight className="size-5" />
+            </button>
+            <button
+              type="button"
+              onClick={isRtl ? handlePrev : handleNext}
+              aria-label="Next"
+              className="absolute end-3 top-1/2 -translate-y-1/2 z-20 hidden sm:flex size-11 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md border border-white/10 hover:bg-black/60 hover:scale-110 transition-all"
+            >
+              <ChevronLeft className="size-5" />
+            </button>
+          </>
+        )}
+
+        {/* ─── Bottom overlay: Title + CTA ─── */}
+        <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-5 sm:px-8 pb-5 pt-16">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={current.id + "-text"}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.3 }}
+              className="flex flex-col sm:flex-row sm:items-end justify-between gap-3"
+            >
+              {/* Title */}
+              <div>
+                <p className="font-display text-base sm:text-2xl lg:text-3xl font-bold text-white drop-shadow-lg leading-snug max-w-xl">
+                  {pick(current.title_ar, current.title_en)}
+                </p>
+              </div>
+
+              {/* CTA Button */}
+              {(current.target_product_id || current.cta_link) && (
+                <div className="shrink-0">
+                  {current.target_product_id ? (
+                    <Link
+                      to="/product/$id"
+                      params={{ id: current.target_product_id }}
+                      className="inline-flex items-center gap-2 rounded-full bg-gold-gradient px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-gold-glow hover:opacity-90 transition-all active:scale-95"
+                    >
+                      <ShoppingBag className="size-4" />
+                      <span>{t("shop_tagged")}</span>
+                    </Link>
+                  ) : (
+                    <a
+                      href={current.cta_link!}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 rounded-full bg-gold-gradient px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-gold-glow hover:opacity-90 transition-all active:scale-95"
+                    >
+                      <ShoppingBag className="size-4" />
+                      <span>{t("shop_tagged")}</span>
+                    </a>
+                  )}
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
         </div>
+
+        {/* ─── Mute Button (top-end corner) ─── */}
+        <button
+          type="button"
+          onClick={() => setMuted((m) => !m)}
+          aria-label={muted ? t("unmute") : t("mute")}
+          className="absolute end-3 top-3 z-20 flex size-9 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md border border-white/10 hover:bg-black/60 transition-colors"
+        >
+          {muted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
+        </button>
       </div>
 
-      <div
-        ref={containerRef}
-        className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4 scrollbar-none py-2"
-        onMouseEnter={() => setIsInteracting(true)}
-        onMouseLeave={() => setIsInteracting(false)}
-        onTouchStart={() => setIsInteracting(true)}
-        onTouchEnd={() => {
-          setTimeout(() => setIsInteracting(false), 2000);
-        }}
-      >
-        {list.map((v, i) => (
-          <ReelCard
-            key={v.id}
-            video={v}
-            index={i}
-            isActive={activeIndex === i}
-            progress={progress}
-            cardRef={(el) => {
-              cardRefs.current[i] = el;
-            }}
-            onOpen={() => {
-              setActiveIndex(i);
-              setSelectedIdx(i);
-            }}
-          />
-        ))}
-      </div>
-
-      <AnimatePresence>
-        {selectedIdx !== null ? (
-          <ReelModal
-            videos={list}
-            initialIndex={selectedIdx}
-            onClose={() => setSelectedIdx(null)}
-          />
-        ) : null}
-      </AnimatePresence>
+      {/* ─── Dots Indicator (below banner, mobile-friendly) ─── */}
+      {list.length > 1 && (
+        <div className="flex justify-center items-center gap-2 py-3 bg-background">
+          {list.map((_, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => goTo(idx)}
+              aria-label={`Slide ${idx + 1}`}
+              className={`rounded-full transition-all duration-300 cursor-pointer ${
+                idx === activeIndex
+                  ? "w-6 h-2 bg-primary shadow-gold-glow"
+                  : "size-2 bg-border hover:bg-primary/50"
+              }`}
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
 }
-
-

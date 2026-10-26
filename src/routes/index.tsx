@@ -164,11 +164,11 @@ function Home() {
 
   return (
     <div className="space-y-6 sm:space-y-10">
+      {/* 🎬 Cinematic Full-Width Promo Ad Banner */}
+      <VideoReels />
+
       {/* 👑 Welcome Hero Banner with Animated CTAs */}
       <Hero />
-
-      {/* 🎬 Story & Promo Reels Showcase */}
-      <VideoReels />
 
       <ValueBar />
       <LotterySection />
