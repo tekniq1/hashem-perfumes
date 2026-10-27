@@ -92,7 +92,7 @@ export function VideoReels() {
   const current = list[activeIndex];
 
   return (
-    <section className="mx-auto max-w-6xl px-4 sm:px-6 my-3 sm:my-6" aria-label={t("promo_videos")}>
+    <section className="mx-auto max-w-7xl px-4 sm:px-6 my-4 sm:my-8" aria-label={t("promo_videos")}>
       {/* ── Luxury Card Container ── */}
       <div
         className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-primary/25 bg-card shadow-gold-glow transition-all duration-300 hover:border-primary/50"
@@ -101,8 +101,8 @@ export function VideoReels() {
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-        {/* Banner Frame (Controlled height: sleek promo ratio) */}
-        <div className="relative h-[180px] sm:h-[260px] md:h-[320px] w-full overflow-hidden bg-gradient-to-br from-card via-background to-card">
+        {/* Banner Frame (Cinematic height: spacious and elegant) */}
+        <div className="relative h-[240px] sm:h-[340px] md:h-[430px] lg:h-[480px] w-full overflow-hidden bg-gradient-to-br from-card via-background to-card">
           <AnimatePresence mode="wait">
             <motion.div
               key={current.id}
