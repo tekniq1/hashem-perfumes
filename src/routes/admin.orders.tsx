@@ -78,13 +78,91 @@ function AdminOrders() {
 
   // ─── Update status ──────────────────────────────────────────────────────
   const setStatus = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: OrderStatus }) => {
-      const { error } = await supabase.from("orders").update({ status }).eq("id", id);
+    mutationFn: async ({
+      id,
+      currentStatus,
+      newStatus,
+    }: {
+      id: string;
+      currentStatus: OrderStatus;
+      newStatus: OrderStatus;
+    }) => {
+      if (currentStatus === newStatus) return { newStatus, currentStatus };
+
+      // 1. If cancelling an active order -> RESTORE stock to inventory!
+      if (newStatus === "cancelled" && currentStatus !== "cancelled") {
+        const { data: items, error: itemsErr } = await supabase
+          .from("order_items")
+          .select("product_id, quantity")
+          .eq("order_id", id);
+
+        if (itemsErr) throw itemsErr;
+
+        if (items && items.length > 0) {
+          for (const item of items) {
+            if (!item.product_id) continue;
+            const { data: prod } = await supabase
+              .from("products")
+              .select("id, stock_quantity")
+              .eq("id", item.product_id)
+              .single();
+
+            if (prod) {
+              const restoredStock = (prod.stock_quantity ?? 0) + (item.quantity ?? 0);
+              await supabase
+                .from("products")
+                .update({ stock_quantity: restoredStock })
+                .eq("id", item.product_id);
+            }
+          }
+        }
+      }
+
+      // 2. If re-activating an order that was cancelled -> DEDUCT stock again!
+      if (currentStatus === "cancelled" && newStatus !== "cancelled") {
+        const { data: items, error: itemsErr } = await supabase
+          .from("order_items")
+          .select("product_id, quantity")
+          .eq("order_id", id);
+
+        if (itemsErr) throw itemsErr;
+
+        if (items && items.length > 0) {
+          for (const item of items) {
+            if (!item.product_id) continue;
+            const { data: prod } = await supabase
+              .from("products")
+              .select("id, stock_quantity")
+              .eq("id", item.product_id)
+              .single();
+
+            if (prod) {
+              const deductedStock = Math.max(0, (prod.stock_quantity ?? 0) - (item.quantity ?? 0));
+              await supabase
+                .from("products")
+                .update({ stock_quantity: deductedStock })
+                .eq("id", item.product_id);
+            }
+          }
+        }
+      }
+
+      // 3. Update order status
+      const { error } = await supabase.from("orders").update({ status: newStatus }).eq("id", id);
       if (error) throw error;
+      return { newStatus, currentStatus };
     },
-    onSuccess: () => {
-      toast.success(t("saved"));
+    onSuccess: (data) => {
+      if (data?.newStatus === "cancelled") {
+        toast.success("تم إلغاء الطلب واسترجاع الكميات إلى المخزون بنجاح 🔄📦");
+      } else if (data?.currentStatus === "cancelled") {
+        toast.success("تم تفعيل الطلب وخصم الكميات من المخزون 📦");
+      } else {
+        toast.success(t("saved"));
+      }
       qc.invalidateQueries({ queryKey: ["admin-orders-all"] });
+      qc.invalidateQueries({ queryKey: ["admin-orders"] });
+      qc.invalidateQueries({ queryKey: ["products"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -138,9 +216,10 @@ function AdminOrders() {
     return matchStatus && matchSearch;
   });
 
-  // ─── Stats ──────────────────────────────────────────────────────────────
-  const totalRevenue = (orders as any[]).reduce((s, o) => s + Number(o.total_amount ?? 0), 0);
-  const totalProfit  = (orders as any[]).reduce((s, o) => s + Number(o.total_profit ?? 0), 0);
+  // ─── Stats (Exclude cancelled orders from revenue & profit) ─────────────
+  const activeOrders = (orders as any[]).filter((o: any) => o.status !== "cancelled");
+  const totalRevenue = activeOrders.reduce((s, o) => s + Number(o.total_amount ?? 0), 0);
+  const totalProfit  = activeOrders.reduce((s, o) => s + Number(o.total_profit ?? 0), 0);
   const pending      = (orders as any[]).filter((o) => o.status === "pending").length;
 
   return (
@@ -378,7 +457,11 @@ function AdminOrders() {
                           <select
                             value={order.status}
                             onChange={(e) =>
-                              setStatus.mutate({ id: order.id, status: e.target.value as OrderStatus })
+                              setStatus.mutate({
+                                id: order.id,
+                                currentStatus: order.status,
+                                newStatus: e.target.value as OrderStatus,
+                              })
                             }
                             className="rounded-xl border border-border bg-card px-3 py-2 text-xs text-foreground outline-none focus:border-primary cursor-pointer"
                           >
@@ -386,6 +469,32 @@ function AdminOrders() {
                               <option key={s} value={s}>{t(s)}</option>
                             ))}
                           </select>
+
+                          {order.status !== "cancelled" ? (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (
+                                  confirm(
+                                    `هل تريد إلغاء الطلب #${order.order_number || order.id.slice(0, 8)} وإرجاع كميات العطور إلى المخزون تلقائياً؟`
+                                  )
+                                ) {
+                                  setStatus.mutate({
+                                    id: order.id,
+                                    currentStatus: order.status,
+                                    newStatus: "cancelled",
+                                  });
+                                }
+                              }}
+                              className="flex items-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 px-3 py-2 text-xs font-semibold transition-colors"
+                            >
+                              إلغاء واسترجاع المخزون 🔄
+                            </button>
+                          ) : (
+                            <span className="text-[11px] font-medium text-rose-500 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1.5 rounded-xl">
+                              تم الإلغاء واسترجاع الكميات للمخزون ✓
+                            </span>
+                          )}
 
                           <button
                             onClick={() => openWhatsApp(order)}

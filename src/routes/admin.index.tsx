@@ -30,7 +30,9 @@ function AdminOverview() {
     },
   });
 
-  const revenue = (orders.data ?? []).reduce((s, o) => s + Number(o.total_amount ?? 0), 0);
+  const revenue = (orders.data ?? [])
+    .filter((o) => o.status !== "cancelled")
+    .reduce((s, o) => s + Number(o.total_amount ?? 0), 0);
 
   const cards = [
     {
