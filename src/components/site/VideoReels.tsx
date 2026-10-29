@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, ShoppingBag, Sparkles, Volume2, VolumeX } from "lucide-react";
+import { ChevronLeft, ChevronRight, Flame, ShoppingBag, Volume2, VolumeX } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { fetchPromoVideos, type PromoVideo } from "@/lib/videos";
 
@@ -142,10 +142,10 @@ export function VideoReels() {
 
           {/* ── Top Bar inside Card: "إعلان" Badge + Audio Toggle ── */}
           <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between p-3 sm:p-4">
-            {/* Ad Badge (Like the user's reference) */}
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-black/50 px-3 py-1 text-[11px] sm:text-xs font-semibold text-primary border border-primary/30 backdrop-blur-md shadow-sm">
-              <Sparkles className="size-3 text-primary animate-pulse" />
-              <span>{isRtl ? "إعلان مميز" : "Featured Ad"}</span>
+            {/* Promo Discount Badge */}
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-950/80 via-black/70 to-red-950/80 px-3.5 py-1 text-[11px] sm:text-xs font-bold text-amber-300 border border-amber-400/50 backdrop-blur-md shadow-gold-glow">
+              <Flame className="size-3.5 text-amber-400 animate-pulse" />
+              <span>{isRtl ? "تخفيض 50% 🔥" : "50% OFF 🔥"}</span>
             </div>
 
             {/* Mute / Unmute Button */}
